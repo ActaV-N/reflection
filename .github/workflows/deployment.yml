@@ -13,7 +13,7 @@ jobs:
     - name: Node js
       uses: actions/setup-node@v3
       with:
-        node-version: ['16.x', '18.x']
+        node-versions: ['16.x', '18.x']
     - run: npm run build
     - name: copy file via ssh password
       uses: appleboy/scp-action@v0.1.4
