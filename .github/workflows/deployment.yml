@@ -27,3 +27,4 @@ jobs:
         password: ${{ secrets.PASSWORD }}
         source: "dist/**/*"
         target: /var/www/actav.be/public_html/reflection
+        strip_components: 1
