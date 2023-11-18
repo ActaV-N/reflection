@@ -13,6 +13,30 @@ export class Hud implements HUD {
 
   private shader!: HudShader;
 
+  public point: {
+    left: {
+      x: number;
+      y: number;
+      gesture: string;
+    };
+    right: {
+      x: number;
+      y: number;
+      gesture: string;
+    };
+  } = {
+    left: {
+      x: 0,
+      y: 0,
+      gesture: "",
+    },
+    right: {
+      x: 0,
+      y: 0,
+      gesture: "",
+    },
+  };
+
   constructor(
     private world: World,
     private camera: Camera,
@@ -51,8 +75,25 @@ export class Hud implements HUD {
     /**
      * [[{x, y, z}], [{x, y, z}]]
      */
-    if (results.landmarks && results.gestures) {
+    if (results.landmarks && results.gestures && results.handedness) {
       const vertices = [];
+      for (let i = 0; i < 2; i++) {
+        const landmarks = results.landmarks[i];
+        const handed = results.handedness[i];
+        const gesture = results.gestures[i];
+
+        if (handed && gesture) {
+          const hand = handed[0].categoryName.toLowerCase() as "left" | "right";
+          const gestureCategory = gesture[0].categoryName;
+          const point = {
+            x: landmarks[9].x,
+            y: landmarks[9].y,
+            gesture: gestureCategory,
+          };
+
+          this.point[hand] = point;
+        }
+      }
 
       for (const landmarks of results.landmarks) {
         for (const landmark of landmarks) {
