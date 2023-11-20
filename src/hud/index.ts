@@ -72,7 +72,6 @@ export class Hud implements HUD {
      * [[{x, y, z}], [{x, y, z}]]
      */
     if (results.landmarks && results.gestures && results.handedness) {
-      const vertices = [];
       for (let i = 0; i < 2; i++) {
         const landmarks = results.landmarks[i];
         const handed = results.handedness[i];
