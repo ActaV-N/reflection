@@ -35,7 +35,7 @@ export class HudPointShader extends Shader {
     this.gl.bufferData(
       this.gl.ARRAY_BUFFER,
       this.vertices,
-      this.gl.STATIC_DRAW
+      this.gl.DYNAMIC_DRAW
     );
 
     this.gl.enableVertexAttribArray(this.positionAttributeLocation);
