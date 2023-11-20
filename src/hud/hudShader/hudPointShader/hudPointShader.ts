@@ -1,8 +1,8 @@
 import { NormalizedLandmark } from "@mediapipe/tasks-vision";
-import { Shader } from "../../shader";
+import { Shader } from "../../../shader";
 import { FRAGMENT, VERTEX } from "./hudPointShaderSource";
 
-export class HudShader extends Shader {
+export class HudPointShader extends Shader {
   private positionAttributeLocation!: number;
 
   private vao!: WebGLVertexArrayObject;
