@@ -55,9 +55,21 @@ export class HudPointShader extends Shader {
 
   updateVertices(normalizedLandmarks: NormalizedLandmark[][]) {
     const vertices = []
-    for (const landmarks of normalizedLandmarks) {
-      const {x, y} = landmarks[9];
-      vertices.push(x * 2 - 1, -(y * 2 - 1));
+    for (let i=0; i<2; i++) {
+      const landmarks = normalizedLandmarks[i];
+      if(landmarks) {
+        const {x, y} = landmarks[0];
+  
+        const targetX = x * 2 - 1;
+        const targetY = -(y * 2 - 1);
+        
+        const currentX = this.vertices[i * 2] || targetX;
+        const currentY = this.vertices[i * 2 + 1] || targetY;
+        
+        const nextX = currentX + (targetX - currentX) * 0.3;
+        const nextY = currentY + (targetY - currentY) * 0.3;
+        vertices.push(nextX, nextY);
+      }
     }
     this.vertices = new Float32Array(vertices);
   }

@@ -24,7 +24,7 @@ canvas {
 }
 
 video {
-  visibility: hidden;
+  /* visibility: hidden; */
 
   position: absolute;
   top: 0;

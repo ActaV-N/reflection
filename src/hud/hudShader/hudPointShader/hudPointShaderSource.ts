@@ -2,22 +2,24 @@ export const VERTEX = `#version 300 es
 
   layout(location = 0) 
   in vec4 a_position;
+  out vec4 v_color;
 
-  uniform mat4 u_matrix;
-  
   void main() {
     gl_Position = a_position;
-    gl_PointSize = 10.0;
+    gl_PointSize = 30.0;
+
+    v_color = a_position * 0.5 + 0.5;
   }
 `;
 
 export const FRAGMENT = `#version 300 es
   precision highp float;
 
+  in vec4 v_color;
   out vec4 color;
   in vec2 vUv;
 
   void main() {
-    color = vec4(1.0, 0, 0.01, 1.0);
+    color = v_color;
   }
 `;

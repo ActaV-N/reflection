@@ -4,19 +4,20 @@ import { Camera } from "./camera";
 import { Hud } from "./hud";
 import { World } from "./world";
 
-(async function() {
+(async function () {
   const vision = await FilesetResolver.forVisionTasks(
     "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
   );
-  
+
   const gestureRecognizer = await GestureRecognizer.createFromOptions(vision, {
     baseOptions: {
-      modelAssetPath: "https://storage.googleapis.com/mediapipe-tasks/gesture_recognizer/gesture_recognizer.task",
+      modelAssetPath:
+        "https://storage.googleapis.com/mediapipe-tasks/gesture_recognizer/gesture_recognizer.task",
       delegate: "GPU",
     },
-    runningMode: 'VIDEO',
-    numHands: 2
-  })
+    runningMode: "VIDEO",
+    numHands: 2,
+  });
 
   const camera = await Camera.setUpCamera();
   const world = new World();
@@ -25,8 +26,7 @@ import { World } from "./world";
   world.initialize(hud);
 
   world.animate();
-  window.addEventListener('resize', () =>
-  {
+  window.addEventListener("resize", () => {
     world.resize();
-  })
-})()
+  });
+})();
