@@ -1,4 +1,6 @@
-import { Shader } from "../shader";
+import { NormalizedLandmark } from "@mediapipe/tasks-vision";
+import { Shader } from "../../shader";
+import { FRAGMENT, VERTEX } from "./hudPointShaderSource";
 
 export class HudShader extends Shader {
   private positionAttributeLocation!: number;
@@ -7,9 +9,14 @@ export class HudShader extends Shader {
 
   private vertices!: Float32Array;
 
-  constructor(gl: WebGL2RenderingContext, source: { vertex: string; fragment: string }) {
+  constructor(gl: WebGL2RenderingContext) {
+    const source = {
+      vertex: VERTEX,
+      fragment: FRAGMENT,
+    };
+
     super(gl, source);
-    
+
     this.positionAttributeLocation = this.gl.getAttribLocation(
       this.program,
       "a_position"
@@ -23,6 +30,7 @@ export class HudShader extends Shader {
     this.vao = this.gl.createVertexArray()!;
     this.gl.bindVertexArray(this.vao);
   }
+
   animate() {
     this.gl.bufferData(
       this.gl.ARRAY_BUFFER,
@@ -43,14 +51,14 @@ export class HudShader extends Shader {
     this.gl.useProgram(this.program);
     this.gl.bindVertexArray(this.vao);
     this.gl.drawArrays(this.gl.POINTS, 0, this.vertices.length / 2);
-    const verticesCount = this.vertices.length / 2;
-    this.gl.drawArrays(this.gl.LINE_LOOP, 0, Math.min(21, verticesCount));
-    if(verticesCount > 21) {
-      this.gl.drawArrays(this.gl.LINE_LOOP, 21, 21);
-    }
   }
 
-  updateVertices(vertices: Float32Array) {
-    this.vertices = vertices;
+  updateVertices(normalizedLandmarks: NormalizedLandmark[][]) {
+    const vertices = []
+    for (const landmarks of normalizedLandmarks) {
+      const {x, y} = landmarks[9];
+      vertices.push(x * 2 - 1, -(y * 2 - 1));
+    }
+    this.vertices = new Float32Array(vertices);
   }
 }

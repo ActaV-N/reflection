@@ -3,8 +3,8 @@ import { Subject } from "rxjs";
 import { GESTURE } from "../const";
 import { Camera } from "../camera";
 import { World } from "../world";
-import { FRAGMENT, VERTEX } from "./hudShaderSource";
-import { HudShader } from "./hudShader";
+import { FRAGMENT, VERTEX } from "./hudHandShader/hudHandShaderSource";
+import { HudShader } from "./hudPointShader/hudPointShader";
 
 export class Hud implements HUD {
   private canvas!: HTMLCanvasElement;
@@ -52,10 +52,7 @@ export class Hud implements HUD {
     /**
      * Shader
      */
-    this.shader = new HudShader(this.gl, {
-      vertex: VERTEX,
-      fragment: FRAGMENT,
-    });
+    this.shader = new HudShader(this.gl);
 
     // Initial sizing
     this.resize();
@@ -96,14 +93,10 @@ export class Hud implements HUD {
         }
       }
 
-      for (const landmarks of results.landmarks) {
-        for (const landmark of landmarks) {
-          const { x, y } = landmark;
-
-          vertices.push(x * 2 - 1, -(y * 2 - 1));
-        }
+      if (results.landmarks.length === 0) {
+        this.subject.next(null);
       }
-      this.shader.updateVertices(new Float32Array(vertices));
+      this.shader.updateVertices(results.landmarks);
     }
   }
 
