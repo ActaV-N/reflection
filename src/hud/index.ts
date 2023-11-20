@@ -128,34 +128,39 @@ export class Hud implements HUD {
       // TODO: 만약 클릭 정확도에 문제가 생긴다면 모델을 수정하는게 좋을수도 있다.
       if (
         prevGesture.left === GESTURE.CLOSED &&
-        left.gesture === GESTURE.NONE
+        left.gesture === GESTURE.OPEN
       ) {
         currentEvent = "leftclick";
       }
 
       if (
         prevGesture.right === GESTURE.CLOSED &&
-        right.gesture === GESTURE.NONE
+        right.gesture === GESTURE.OPEN
       ) {
         currentEvent = "rightclick";
       }
 
-      if(['click', 'rightclick'].includes(event)) {
-        if(currentEvent === 'rightclick') {
+      if (["click", "rightclick"].includes(event)) {
+        if (currentEvent === "rightclick") {
           eventHandler({ ...this.point.right, position: "right" });
         }
       }
 
-      if(['click', 'leftclick'].includes(event)) {
-        if(currentEvent === 'leftclick') {
+      if (["click", "leftclick"].includes(event)) {
+        if (currentEvent === "leftclick") {
           eventHandler({ ...this.point.left, position: "left" });
         }
       }
 
       // Set for next subscription
       currentEvent = "None";
-      prevGesture.left = left.gesture;
-      prevGesture.right = right.gesture;
+
+      if (left.gesture !== GESTURE.NONE) {
+        prevGesture.left = left.gesture;
+      }
+      if (right.gesture !== GESTURE.NONE) {
+        prevGesture.right = right.gesture;
+      }
     });
   }
 
