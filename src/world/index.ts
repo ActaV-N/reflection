@@ -10,9 +10,14 @@ export class World {
     // const canvas = document.querySelector('#world-webgl')!;
   }
 
-  // TODO: screenSaver는 initialize할 때 받기
   initialize(hud: HUD) {
+    /**
+     * HUD
+     */
     this.hud = hud;
+    // this.hud.addEventListener('click', (point) => {
+    //   console.log(point);
+    // });
   }
 
   animate() {

@@ -1,4 +1,6 @@
 import { GestureRecognizer } from "@mediapipe/tasks-vision";
+import { Subject } from "rxjs";
+import { GESTURE } from "../const";
 import { Camera } from "../camera";
 import { World } from "../world";
 import { FRAGMENT, VERTEX } from "./hudShaderSource";
@@ -13,18 +15,9 @@ export class Hud implements HUD {
 
   private shader!: HudShader;
 
-  public point: {
-    left: {
-      x: number;
-      y: number;
-      gesture: string;
-    };
-    right: {
-      x: number;
-      y: number;
-      gesture: string;
-    };
-  } = {
+  private subject!: Subject<Hands | null>;
+
+  public point: Hands = {
     left: {
       x: 0,
       y: 0,
@@ -42,6 +35,9 @@ export class Hud implements HUD {
     private camera: Camera,
     private gestureRecognizer: GestureRecognizer
   ) {
+    // rxjs
+    this.subject = new Subject<Hands | null>();
+
     /**
      * Canvas
      */
@@ -63,6 +59,10 @@ export class Hud implements HUD {
 
     // Initial sizing
     this.resize();
+
+    this.addEventListener("click", (event: PointEvent) => {
+      console.log(event);
+    });
   }
 
   drawLandmarks() {
@@ -92,6 +92,7 @@ export class Hud implements HUD {
           };
 
           this.point[hand] = point;
+          this.subject.next(this.point);
         }
       }
 
@@ -104,6 +105,58 @@ export class Hud implements HUD {
       }
       this.shader.updateVertices(new Float32Array(vertices));
     }
+  }
+
+  // TODO: type inference
+  addEventListener(event: EventType, eventHandler: IEventHandler) {
+    const prevGesture = {
+      left: GESTURE.NONE,
+      right: GESTURE.NONE,
+    };
+
+    let currentEvent: string = "None";
+
+    this.subject.subscribe((point: Hands | null) => {
+      if (!point) {
+        prevGesture.left = GESTURE.NONE;
+        prevGesture.right = GESTURE.NONE;
+        currentEvent = "None";
+        return;
+      }
+      const { left, right } = point;
+
+      // TODO: 만약 클릭 정확도에 문제가 생긴다면 모델을 수정하는게 좋을수도 있다.
+      if (
+        prevGesture.left === GESTURE.CLOSED &&
+        left.gesture === GESTURE.NONE
+      ) {
+        currentEvent = "leftclick";
+      }
+
+      if (
+        prevGesture.right === GESTURE.CLOSED &&
+        right.gesture === GESTURE.NONE
+      ) {
+        currentEvent = "rightclick";
+      }
+
+      if(['click', 'rightclick'].includes(event)) {
+        if(currentEvent === 'rightclick') {
+          eventHandler({ ...this.point.right, position: "right" });
+        }
+      }
+
+      if(['click', 'leftclick'].includes(event)) {
+        if(currentEvent === 'leftclick') {
+          eventHandler({ ...this.point.left, position: "left" });
+        }
+      }
+
+      // Set for next subscription
+      currentEvent = "None";
+      prevGesture.left = left.gesture;
+      prevGesture.right = right.gesture;
+    });
   }
 
   animate() {

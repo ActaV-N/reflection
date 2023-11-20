@@ -43,7 +43,11 @@ export class HudShader extends Shader {
     this.gl.useProgram(this.program);
     this.gl.bindVertexArray(this.vao);
     this.gl.drawArrays(this.gl.POINTS, 0, this.vertices.length / 2);
-    this.gl.drawArrays(this.gl.LINE_LOOP, 0, this.vertices.length / 2);
+    const verticesCount = this.vertices.length / 2;
+    this.gl.drawArrays(this.gl.LINE_LOOP, 0, Math.min(21, verticesCount));
+    if(verticesCount > 21) {
+      this.gl.drawArrays(this.gl.LINE_LOOP, 21, 21);
+    }
   }
 
   updateVertices(vertices: Float32Array) {
