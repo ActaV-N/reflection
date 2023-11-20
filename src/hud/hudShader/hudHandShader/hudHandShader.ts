@@ -21,7 +21,7 @@ export class HudHandShader extends Shader {
       "a_position"
     );
 
-    this.vertices = new Float32Array([0, 0, 0, 0]);
+    this.vertices = new Float32Array([]);
 
     const buffer = this.gl.createBuffer();
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer);
@@ -58,12 +58,24 @@ export class HudHandShader extends Shader {
   }
 
   updateVertices(normalizedLandmarks: NormalizedLandmark[][]) {
-    const vertices = []
-    for (const landmarks of normalizedLandmarks) {
-      for (const landmark of landmarks) {
-        const { x, y } = landmark;
+    const vertices = [];
+    for (let i = 0; i < 2; i++) {
+      for (let j = 0; j < 21; j++) {
+        const landmark = normalizedLandmarks[i]?.[j];
+        if (landmark) {
+          const { x, y } = landmark;
 
-        vertices.push(x * 2 - 1, -(y * 2 - 1));
+          const targetX = x * 2 - 1;
+          const targetY = -(y * 2 - 1);
+
+          const currentX = this.vertices[i * 42 + j * 2] || targetX;
+          const currentY = this.vertices[i * 42 + j * 2 + 1] || targetY;
+
+          const nextX = currentX + (targetX - currentX) * 0.3;
+          const nextY = currentY + (targetY - currentY) * 0.3;
+
+          vertices.push(nextX, nextY);
+        }
       }
     }
     this.vertices = new Float32Array(vertices);

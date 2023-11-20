@@ -3,7 +3,7 @@ import { Subject } from "rxjs";
 import { GESTURE } from "../const";
 import { Camera } from "../camera";
 import { World } from "../world";
-import { HudPointShader as HudShader } from "./hudShader";
+import { HudHandShader as HudShader } from "./hudShader";
 
 export class Hud implements HUD {
   private canvas!: HTMLCanvasElement;

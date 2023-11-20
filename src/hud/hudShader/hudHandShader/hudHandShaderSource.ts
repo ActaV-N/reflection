@@ -4,7 +4,7 @@ export const VERTEX = `#version 300 es
 
   void main() {
     gl_Position = a_position;
-    gl_PointSize = 3.0;
+    gl_PointSize = 5.0;
   }
 `;
 
@@ -15,6 +15,6 @@ export const FRAGMENT = `#version 300 es
   out vec4 color;
 
   void main() {
-    color = vec4(0, 0, 0.01, 0.1);
+    color = vec4(0, 0, 0.1, 1);
   }
 `;
