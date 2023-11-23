@@ -51,14 +51,15 @@ export class HudHandShader extends Shader {
     this.gl.bindVertexArray(this.vao);
     this.gl.drawArrays(this.gl.POINTS, 0, this.vertices.length / 2);
     const verticesCount = this.vertices.length / 2;
-    this.gl.drawArrays(this.gl.LINE_LOOP, 0, Math.min(21, verticesCount));
+    this.gl.drawArrays(this.gl.TRIANGLE_FAN, 0, Math.min(21, verticesCount));
     if (verticesCount > 21) {
-      this.gl.drawArrays(this.gl.LINE_LOOP, 21, 21);
+      this.gl.drawArrays(this.gl.TRIANGLE_FAN, 21, 21);
     }
   }
 
   updateVertices(normalizedLandmarks: NormalizedLandmark[][]) {
     const vertices = [];
+    // const targetIndex = [0, 1, 5, 9,]
     for (let i = 0; i < 2; i++) {
       for (let j = 0; j < 21; j++) {
         const landmark = normalizedLandmarks[i]?.[j];
@@ -71,8 +72,8 @@ export class HudHandShader extends Shader {
           const currentX = this.vertices[i * 42 + j * 2] || targetX;
           const currentY = this.vertices[i * 42 + j * 2 + 1] || targetY;
 
-          const nextX = currentX + (targetX - currentX) * 0.3;
-          const nextY = currentY + (targetY - currentY) * 0.3;
+          const nextX = currentX + (targetX - currentX) * 0.08;
+          const nextY = currentY + (targetY - currentY) * 0.08;
 
           vertices.push(nextX, nextY);
         }

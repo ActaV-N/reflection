@@ -1,20 +1,26 @@
 import { GestureRecognizer } from "@mediapipe/tasks-vision";
+import * as THREE from "three";
 import { Subject } from "rxjs";
 import { GESTURE } from "../const";
 import { Camera } from "../camera";
 import { World } from "../world";
-import { HudHandShader as HudShader } from "./hudShader";
-
 export class Hud implements HUD {
   private canvas!: HTMLCanvasElement;
 
-  private gl!: WebGL2RenderingContext;
-
   private sizes!: { width: number; height: number };
 
-  private shader!: HudShader;
-
   private subject!: Subject<Hands | null>;
+
+  private scene!: THREE.Scene;
+
+  private renderer!: THREE.WebGLRenderer;
+
+  private hudCamera!: THREE.OrthographicCamera;
+
+  public handMesh!: {
+    left: THREE.Mesh;
+    right: THREE.Mesh;
+  };
 
   public point: Hands = {
     left: {
@@ -41,17 +47,60 @@ export class Hud implements HUD {
      * Canvas
      */
     this.canvas = document.querySelector("#hud-webgl")!;
-    this.gl = this.canvas.getContext("webgl2")!;
 
     this.sizes = world.sizes;
+    /**
+     * ## THREE JS ##
+     */
+    // Scene
+    this.scene = new THREE.Scene();
 
-    this.canvas.width = this.sizes.width;
-    this.canvas.height = this.sizes.width;
+    // Renderer
+    this.renderer = new THREE.WebGLRenderer({
+      canvas: this.canvas,
+    });
+    this.renderer.setSize(this.sizes.width, this.sizes.height);
+
+    /**
+     * Mesh
+     */
+    this.handMesh = {
+      left: new THREE.Mesh(
+        new THREE.BoxGeometry(0.1, 0.1, 0.1, 5, 5, 5),
+        new THREE.MeshBasicMaterial({ color: '#8e8e8e' })
+      ),
+      right: new THREE.Mesh(
+        new THREE.BoxGeometry(0.1, 0.1, 0.1, 5, 5, 5),
+        new THREE.MeshBasicMaterial({ color: '#8e8e8e' })
+      ),
+    }
+
+    this.handMesh.left.position.x = -1;
+    this.handMesh.left.position.y = 1;
+
+    this.scene.add(this.handMesh.left);
+    this.scene.add(this.handMesh.right);
+
+    /**
+     * Camera
+     */ 
+    const aspectRatio = this.sizes.width / this.sizes.height;
+    this.hudCamera = new THREE.OrthographicCamera(
+      -1 * aspectRatio,
+      1 * aspectRatio,
+      1,
+      -1,
+      0.1,
+      100
+    );
+
+    this.hudCamera.position.z = 1
+    this.scene.add(this.hudCamera);
 
     /**
      * Shader
      */
-    this.shader = new HudShader(this.gl);
+    // this.shader = new HudShader(this.gl);
 
     // Initial sizing
     this.resize();
@@ -61,7 +110,7 @@ export class Hud implements HUD {
     });
   }
 
-  drawLandmarks() {
+  recognizeHands() {
     const nowInMs = Date.now();
     const results = this.gestureRecognizer.recognizeForVideo(
       this.camera.video,
@@ -80,11 +129,15 @@ export class Hud implements HUD {
         if (handed && gesture) {
           const hand = handed[0].categoryName.toLowerCase() as "left" | "right";
           const gestureCategory = gesture[0].categoryName;
+          
           const point = {
-            x: landmarks[9].x,
-            y: landmarks[9].y,
+            x: (landmarks[9].x - 0.5) * 2,
+            y: - (landmarks[9].y - 0.5) * 2,
             gesture: gestureCategory,
           };
+          
+          this.handMesh[hand].position.x = this.handMesh[hand].position.x + (point.x - this.handMesh[hand].position.x) * 0.08;
+          this.handMesh[hand].position.y = this.handMesh[hand].position.y + (point.y - this.handMesh[hand].position.y) * 0.08;
 
           this.point[hand] = point;
           this.subject.next(this.point);
@@ -94,7 +147,6 @@ export class Hud implements HUD {
       if (results.landmarks.length === 0) {
         this.subject.next(null);
       }
-      this.shader.updateVertices(results.landmarks);
     }
   }
 
@@ -116,6 +168,7 @@ export class Hud implements HUD {
       }
       const { left, right } = point;
 
+      // FIXME: 똑같은 손이면 클릭이벤트가 이상하게 작동할 수 있다.
       // TODO: 만약 클릭 정확도에 문제가 생긴다면 모델을 수정하는게 좋을수도 있다.
       if (
         prevGesture.left === GESTURE.CLOSED &&
@@ -156,24 +209,14 @@ export class Hud implements HUD {
   }
 
   animate() {
-    this.drawLandmarks();
-    this.gl.clearColor(0, 0, 0, 0.0);
-    this.gl.clear(this.gl.COLOR_BUFFER_BIT);
-
-    // Shader animate
-    this.shader.animate();
+    this.recognizeHands();
+    this.renderer.render(this.scene, this.hudCamera);
   }
 
   // NOTE: abstract method로 뺄 수 있다.(일단 단일 기기인 아이패드에서만 사용 예정이니 resize는 미구현인체로 남겨둔다)
   resize() {
     this.sizes = this.world.sizes;
 
-    this.canvas.width = this.sizes.width;
-    this.canvas.height = this.sizes.width;
-
-    this.gl.canvas.width = this.sizes.width;
-    this.gl.canvas.height = this.sizes.height;
-
-    this.gl.viewport(0, 0, this.gl.canvas.width, this.gl.canvas.height);
+    this.renderer.setSize(this.sizes.width, this.sizes.height);
   }
 }
