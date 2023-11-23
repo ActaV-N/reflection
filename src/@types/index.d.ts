@@ -1,18 +1,12 @@
-type EventType = "leftclick" | "rightclick" | "click";
-
-type Point = {
+type EventType = "click";
+interface Hand {
   x: number;
   y: number;
   // TODO: event type 정의하면 event type으로 바꿀 것.
   gesture: string;
-};
-
-type PointEvent = Point & { position: 'left' | 'right' | 'both' };
-
-interface Hands {
-  left: Point;
-  right: Point;
 }
+
+type PointEvent = Hand;
 
 interface IEventHandler {
   (event: PointEvent): void | Promise<void>,

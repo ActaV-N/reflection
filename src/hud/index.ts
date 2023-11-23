@@ -9,7 +9,9 @@ export class Hud implements HUD {
 
   private sizes!: { width: number; height: number };
 
-  private subject!: Subject<Hands | null>;
+  private aspectRatio!: number;
+
+  private subject!: Subject<Hand | null>;
 
   private scene!: THREE.Scene;
 
@@ -17,22 +19,17 @@ export class Hud implements HUD {
 
   private hudCamera!: THREE.OrthographicCamera;
 
-  public handMesh!: {
-    left: THREE.Mesh;
-    right: THREE.Mesh;
+  public handMesh!: THREE.Mesh;
+
+  public point: Hand = {
+    x: 0,
+    y: 0,
+    gesture: "",
   };
 
-  public point: Hands = {
-    left: {
-      x: 0,
-      y: 0,
-      gesture: "",
-    },
-    right: {
-      x: 0,
-      y: 0,
-      gesture: "",
-    },
+  public static DefaultHandPosition: {
+    x: number;
+    y: number;
   };
 
   constructor(
@@ -41,7 +38,7 @@ export class Hud implements HUD {
     private gestureRecognizer: GestureRecognizer
   ) {
     // rxjs
-    this.subject = new Subject<Hands | null>();
+    this.subject = new Subject<Hand | null>();
 
     /**
      * Canvas
@@ -49,6 +46,13 @@ export class Hud implements HUD {
     this.canvas = document.querySelector("#hud-webgl")!;
 
     this.sizes = world.sizes;
+    this.aspectRatio = this.sizes.width / this.sizes.height;
+
+    Hud.DefaultHandPosition = {
+      x: 0 * this.aspectRatio,
+      y: -0.7,
+    };
+
     /**
      * ## THREE JS ##
      */
@@ -64,37 +68,29 @@ export class Hud implements HUD {
     /**
      * Mesh
      */
-    this.handMesh = {
-      left: new THREE.Mesh(
-        new THREE.BoxGeometry(0.1, 0.1, 0.1, 5, 5, 5),
-        new THREE.MeshBasicMaterial({ color: '#8e8e8e' })
-      ),
-      right: new THREE.Mesh(
-        new THREE.BoxGeometry(0.1, 0.1, 0.1, 5, 5, 5),
-        new THREE.MeshBasicMaterial({ color: '#8e8e8e' })
-      ),
-    }
+    this.handMesh = new THREE.Mesh(
+      new THREE.BoxGeometry(0.1, 0.1, 0.1, 5, 5, 5),
+      new THREE.MeshBasicMaterial({ color: "#8e8e8e" })
+    );
 
-    this.handMesh.left.position.x = -1;
-    this.handMesh.left.position.y = 1;
+    this.handMesh.position.x = Hud.DefaultHandPosition.x;
+    this.handMesh.position.y = Hud.DefaultHandPosition.y;
 
-    this.scene.add(this.handMesh.left);
-    this.scene.add(this.handMesh.right);
+    this.scene.add(this.handMesh);
 
     /**
      * Camera
-     */ 
-    const aspectRatio = this.sizes.width / this.sizes.height;
+     */
     this.hudCamera = new THREE.OrthographicCamera(
-      -1 * aspectRatio,
-      1 * aspectRatio,
+      -1 * this.aspectRatio,
+      1 * this.aspectRatio,
       1,
       -1,
       0.1,
       100
     );
 
-    this.hudCamera.position.z = 1
+    this.hudCamera.position.z = 1;
     this.scene.add(this.hudCamera);
 
     /**
@@ -120,90 +116,70 @@ export class Hud implements HUD {
     /**
      * [[{x, y, z}], [{x, y, z}]]
      */
+    // TODO: left, right를 잘못 인식하는 경우가 생겨서 model을 새로 생성하거나 한손만 쓰는게 좋을듯
     if (results.landmarks && results.gestures && results.handedness) {
-      for (let i = 0; i < 2; i++) {
-        const landmarks = results.landmarks[i];
-        const handed = results.handedness[i];
-        const gesture = results.gestures[i];
+      const landmarks = results.landmarks[0];
+      const gesture = results.gestures[0];
 
-        if (handed && gesture) {
-          const hand = handed[0].categoryName.toLowerCase() as "left" | "right";
-          const gestureCategory = gesture[0].categoryName;
-          
-          const point = {
-            x: (landmarks[9].x - 0.5) * 2,
-            y: - (landmarks[9].y - 0.5) * 2,
-            gesture: gestureCategory,
-          };
-          
-          this.handMesh[hand].position.x = this.handMesh[hand].position.x + (point.x - this.handMesh[hand].position.x) * 0.08;
-          this.handMesh[hand].position.y = this.handMesh[hand].position.y + (point.y - this.handMesh[hand].position.y) * 0.08;
+      if (gesture) {
+        const gestureCategory = gesture[0].categoryName;
 
-          this.point[hand] = point;
-          this.subject.next(this.point);
-        }
+        const point = {
+          x: (landmarks[9].x - 0.5) * 2 * this.aspectRatio,
+          y: -(landmarks[9].y - 0.5) * 2,
+          gesture: gestureCategory,
+        };
+
+        this.handMesh.position.x =
+          this.handMesh.position.x +
+          (point.x - this.handMesh.position.x) * 0.08;
+        this.handMesh.position.y =
+          this.handMesh.position.y +
+          (point.y - this.handMesh.position.y) * 0.08;
+
+        this.point = point;
+        this.subject.next(this.point);
       }
 
       if (results.landmarks.length === 0) {
         this.subject.next(null);
+        this.handMesh.position.x =
+          this.handMesh.position.x +
+          (Hud.DefaultHandPosition.x - this.handMesh.position.x) * 0.08;
+        this.handMesh.position.y =
+          this.handMesh.position.y +
+          (Hud.DefaultHandPosition.y - this.handMesh.position.y) * 0.08;
       }
     }
   }
 
-  // TODO: type inference
   addEventListener(event: EventType, eventHandler: IEventHandler) {
-    const prevGesture = {
-      left: GESTURE.NONE,
-      right: GESTURE.NONE,
-    };
+    let prevGesture = GESTURE.NONE;
 
     let currentEvent: string = "None";
 
-    this.subject.subscribe((point: Hands | null) => {
-      if (!point) {
-        prevGesture.left = GESTURE.NONE;
-        prevGesture.right = GESTURE.NONE;
+    this.subject.subscribe((hand: Hand | null) => {
+      if (!hand) {
+        prevGesture = GESTURE.NONE;
         currentEvent = "None";
         return;
       }
-      const { left, right } = point;
 
-      // FIXME: 똑같은 손이면 클릭이벤트가 이상하게 작동할 수 있다.
-      // TODO: 만약 클릭 정확도에 문제가 생긴다면 모델을 수정하는게 좋을수도 있다.
-      if (
-        prevGesture.left === GESTURE.CLOSED &&
-        left.gesture === GESTURE.OPEN
-      ) {
-        currentEvent = "leftclick";
+      if (prevGesture === GESTURE.CLOSED && hand.gesture === GESTURE.OPEN) {
+        currentEvent = "click";
       }
 
-      if (
-        prevGesture.right === GESTURE.CLOSED &&
-        right.gesture === GESTURE.OPEN
-      ) {
-        currentEvent = "rightclick";
-      }
-
-      if (["click", "rightclick"].includes(event)) {
-        if (currentEvent === "rightclick") {
-          eventHandler({ ...this.point.right, position: "right" });
-        }
-      }
-
-      if (["click", "leftclick"].includes(event)) {
-        if (currentEvent === "leftclick") {
-          eventHandler({ ...this.point.left, position: "left" });
+      if (["click"].includes(event)) {
+        if(currentEvent === 'click') {
+          eventHandler(hand);
         }
       }
 
       // Set for next subscription
       currentEvent = "None";
 
-      if (left.gesture !== GESTURE.NONE) {
-        prevGesture.left = left.gesture;
-      }
-      if (right.gesture !== GESTURE.NONE) {
-        prevGesture.right = right.gesture;
+      if (hand.gesture !== GESTURE.NONE) {
+        prevGesture = hand.gesture;
       }
     });
   }

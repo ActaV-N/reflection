@@ -16,7 +16,7 @@ import { World } from "./world";
       delegate: "GPU",
     },
     runningMode: "VIDEO",
-    numHands: 2,
+    numHands: 1,
   });
 
   const camera = await Camera.setUpCamera();
