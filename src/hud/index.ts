@@ -4,6 +4,8 @@ import { Subject } from "rxjs";
 import { GESTURE } from "../const";
 import { Camera } from "../camera";
 import { World } from "../world";
+import { vertexShader, fragmentShader } from './shaders';
+
 export class Hud implements HUD {
   private canvas!: HTMLCanvasElement;
 
