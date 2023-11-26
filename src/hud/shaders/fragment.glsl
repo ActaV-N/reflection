@@ -1,11 +1,11 @@
-#version 300 es
+precision mediump float;
 
-precision highp float;
+uniform vec3 resolution;
+uniform float uTime;
 
-in vec4 v_color;
-out vec4 color;
-in vec2 vUv;
+varying float vDisplacement;
 
-void main() {
-  color = v_color;
+void main()
+{
+  gl_FragColor = vec4(vec3(vDisplacement), 1);
 }

@@ -1,7 +1,6 @@
-import vertexShader from './vertex.glsl';
-import fragmentShader from './fragment.glsl';
+import vertexShader from "./vertex.glsl";
+import fragmentShader from "./fragment.glsl";
 
-export {
-  vertexShader,
-  fragmentShader,
-}
+export { vertexShader, fragmentShader };
+
+export * from "./bubble";

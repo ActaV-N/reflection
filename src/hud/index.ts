@@ -4,7 +4,7 @@ import { Subject } from "rxjs";
 import { GESTURE } from "../const";
 import { Camera } from "../camera";
 import { World } from "../world";
-import { vertexShader, fragmentShader } from './shaders';
+import { bubbleVertexShader, bubbleFragmentShader } from "./shaders";
 
 export class Hud implements HUD {
   private canvas!: HTMLCanvasElement;
@@ -22,6 +22,12 @@ export class Hud implements HUD {
   private hudCamera!: THREE.OrthographicCamera;
 
   public handMesh!: THREE.Mesh;
+
+  private handMaterial!: THREE.ShaderMaterial;
+
+  private handGeometry!: THREE.CircleGeometry;
+
+  private clock!: THREE.Clock;
 
   public point: Hand = {
     x: 0,
@@ -58,6 +64,8 @@ export class Hud implements HUD {
     /**
      * ## THREE JS ##
      */
+    this.clock = new THREE.Clock();
+
     // Scene
     this.scene = new THREE.Scene();
 
@@ -66,14 +74,22 @@ export class Hud implements HUD {
       canvas: this.canvas,
     });
     this.renderer.setSize(this.sizes.width, this.sizes.height);
+    this.renderer.setClearColor(0x101114);
 
     /**
      * Mesh
      */
-    this.handMesh = new THREE.Mesh(
-      new THREE.BoxGeometry(0.1, 0.1, 0.1, 5, 5, 5),
-      new THREE.MeshBasicMaterial({ color: "#8e8e8e" })
-    );
+    // Geometry
+    this.handGeometry = new THREE.CircleGeometry(0.1, 100);
+    this.handMaterial = new THREE.ShaderMaterial({
+      vertexShader: bubbleVertexShader,
+      fragmentShader: bubbleFragmentShader,
+      uniforms: {
+        uResolution: { value: new THREE.Vector2(this.sizes.width, this.sizes.height) },
+        uTime: { value: 0 },
+      },
+    });
+    this.handMesh = new THREE.Mesh(this.handGeometry, this.handMaterial);
 
     this.handMesh.position.x = Hud.DefaultHandPosition.x;
     this.handMesh.position.y = Hud.DefaultHandPosition.y;
@@ -108,12 +124,15 @@ export class Hud implements HUD {
     });
   }
 
-  recognizeHands() {
+  recognizeHands(elapsedTime: number) {
     const nowInMs = Date.now();
     const results = this.gestureRecognizer.recognizeForVideo(
       this.camera.video,
       nowInMs
     );
+
+    const time = elapsedTime / 10;
+    this.handMaterial.uniforms.uTime = { value: time };
 
     /**
      * [[{x, y, z}], [{x, y, z}]]
@@ -172,7 +191,7 @@ export class Hud implements HUD {
       }
 
       if (["click"].includes(event)) {
-        if(currentEvent === 'click') {
+        if (currentEvent === "click") {
           eventHandler(hand);
         }
       }
@@ -187,7 +206,8 @@ export class Hud implements HUD {
   }
 
   animate() {
-    this.recognizeHands();
+    const elapsedTime = this.clock.getElapsedTime();
+    this.recognizeHands(elapsedTime);
     this.renderer.render(this.scene, this.hudCamera);
   }
 
