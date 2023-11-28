@@ -4,7 +4,7 @@ import { Subject } from "rxjs";
 import { GESTURE } from "../const";
 import { Camera } from "../camera";
 import { World } from "../world";
-import { bubbleVertexShader, bubbleFragmentShader } from "./shaders";
+import { ringVertexShader, ringFragmentShader } from "./shaders";
 
 export class Hud implements HUD {
   private canvas!: HTMLCanvasElement;
@@ -80,10 +80,10 @@ export class Hud implements HUD {
      * Mesh
      */
     // Geometry
-    this.handGeometry = new THREE.CircleGeometry(0.1, 100);
+    this.handGeometry = new THREE.CircleGeometry(0.2, 300);
     this.handMaterial = new THREE.ShaderMaterial({
-      vertexShader: bubbleVertexShader,
-      fragmentShader: bubbleFragmentShader,
+      vertexShader: ringVertexShader,
+      fragmentShader: ringFragmentShader,
       transparent: true,
       uniforms: {
         uResolution: {
