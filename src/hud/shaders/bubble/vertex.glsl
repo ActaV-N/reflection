@@ -35,7 +35,7 @@ float snoise3(vec3 p)
 }
 
 #define time uTime
-float noiseScale = 0.75;
+float noiseScale = 0.65;
 
 void main() {
   vPosition = vPosition;
@@ -43,7 +43,7 @@ void main() {
   vUv = uv;
 
   // MVP
-  vec3 newPosition = position * (snoise3(vec3(uv * noiseScale, uTime * 5.0)) * 0.8 + 1.6);
+  vec3 newPosition = position * (snoise3(vec3(uv * noiseScale, uTime * 1.5)) * 0.5 + 1.5);
   vNewPosition = newPosition;
   vec4 modelViewPosition = modelViewMatrix * vec4(newPosition, 1.0);
   gl_Position = projectionMatrix * modelViewPosition;

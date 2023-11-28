@@ -75,12 +75,6 @@ void draw(out vec4 _FragColor, in vec2 vUv) {
   float r0, d0, n0;
   float r, d;
 
-  // n0 = snoise3( vec3(uv * noiseScale, uTime * 0.5) ) * 0.8 + 1.6;
-  // r0 = mix(mix(innerRadius, 1.0, 0.4), mix(innerRadius, 1.0, 0.6), n0);
-  // d0 = distance(uv, r0 / len * uv);
-  // v0 = light1(1.0, 10.0, d0);
-  // v0 *= smoothstep(r0 * 1.05, r0, len);
-  // cl = cos(ang + uTime * 2.0) * 0.5 + 0.5;
   r0 = mix(mix(innerRadius, 0.4, 0.5), mix(innerRadius, 0.6, 0.5), n0);
   d0 = distance(uv, r0 / len * uv);
   v0 = light1(1.0, 10.0, len);
@@ -92,13 +86,10 @@ void draw(out vec4 _FragColor, in vec2 vUv) {
   vec2 pos = vec2(cos(a), sin(a)) * r0;
   d = distance(uv, pos);
   v1 = light2(1.5, 5.0, d);
-  v1 *= light1(1.0, 50.0 , d0);
-
-  // back decay
-  v2 = smoothstep(1.0, mix(innerRadius, 1.0, n0 * 0.5), len);
+  v1 *= light1(1.0, 20.0 , d0);
   
   // hole
-  v3 = smoothstep(0.4, mix(0.4, 0.45, 0.8), len);
+  v3 = smoothstep(0.5, mix(0.5, 0.45, 1.2), len);
 
   // color
   vec3 c = mix(color1, color2, cl);
@@ -106,7 +97,6 @@ void draw(out vec4 _FragColor, in vec2 vUv) {
   col = mix(color3, col, v0);
 
   col = (col + v1) * v3;
-  // col = (col + v1) * v2 * v3;
   col.rgb = clamp(col.rgb, 0.0, 1.0);
 
   _FragColor = extractAlpha(col);
@@ -119,5 +109,4 @@ void main()
   draw(col, uv);
 
   gl_FragColor = col;
-  // gl_FragColor = vec4(position.xy, 1.0, 1.0);
 }
