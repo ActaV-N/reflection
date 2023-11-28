@@ -84,9 +84,13 @@ export class Hud implements HUD {
     this.handMaterial = new THREE.ShaderMaterial({
       vertexShader: bubbleVertexShader,
       fragmentShader: bubbleFragmentShader,
+      transparent: true,
       uniforms: {
-        uResolution: { value: new THREE.Vector2(this.sizes.width, this.sizes.height) },
+        uResolution: {
+          value: new THREE.Vector2(this.sizes.width, this.sizes.height),
+        },
         uTime: { value: 0 },
+        uClosed: { value: false },
       },
     });
     this.handMesh = new THREE.Mesh(this.handGeometry, this.handMaterial);
@@ -145,6 +149,8 @@ export class Hud implements HUD {
       if (gesture) {
         const gestureCategory = gesture[0].categoryName;
 
+        this.handMaterial.uniforms.uClosed = { value: gestureCategory === GESTURE.CLOSED };
+        
         const point = {
           x: (landmarks[9].x - 0.5) * 2 * this.aspectRatio,
           y: -(landmarks[9].y - 0.5) * 2,
@@ -153,10 +159,10 @@ export class Hud implements HUD {
 
         this.handMesh.position.x =
           this.handMesh.position.x +
-          (point.x - this.handMesh.position.x) * 0.08;
+          (point.x - this.handMesh.position.x) * 0.05;
         this.handMesh.position.y =
           this.handMesh.position.y +
-          (point.y - this.handMesh.position.y) * 0.08;
+          (point.y - this.handMesh.position.y) * 0.05;
 
         this.point = point;
         this.subject.next(this.point);
@@ -166,10 +172,10 @@ export class Hud implements HUD {
         this.subject.next(null);
         this.handMesh.position.x =
           this.handMesh.position.x +
-          (Hud.DefaultHandPosition.x - this.handMesh.position.x) * 0.08;
+          (Hud.DefaultHandPosition.x - this.handMesh.position.x) * 0.01;
         this.handMesh.position.y =
           this.handMesh.position.y +
-          (Hud.DefaultHandPosition.y - this.handMesh.position.y) * 0.08;
+          (Hud.DefaultHandPosition.y - this.handMesh.position.y) * 0.01;
       }
     }
   }

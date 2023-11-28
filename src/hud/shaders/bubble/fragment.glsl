@@ -3,6 +3,10 @@ precision highp float;
 uniform vec3 uResolution;
 uniform float uTime;
 
+varying vec2 vUv;
+varying vec3 vPosition;
+varying vec3 vNewPosition;
+
 vec3 hash33(vec3 p3)
 {
 	p3 = fract(p3 * vec3(.1031,.11369,.13787));
@@ -35,7 +39,7 @@ vec4 extractAlpha(vec3 colorIn)
 {
     vec4 colorOut;
     float maxValue = min(max(max(colorIn.r, colorIn.g), colorIn.b), 1.0);
-    if (maxValue > 1e-5)
+    if (maxValue > 1e-50)
     {
         colorOut.rgb = colorIn.rgb * (1.0 / maxValue);
         colorOut.a = maxValue;
@@ -47,14 +51,12 @@ vec4 extractAlpha(vec3 colorIn)
     return colorOut;
 }
 
-#define BG_COLOR (vec3(sin(uTime)*0.5+0.5) * 0.0 + vec3(0.0))
-#define time uTime
-
 const vec3 color1 = vec3(0.611765, 0.262745, 0.996078);
 const vec3 color2 = vec3(0.298039, 0.760784, 0.913725);
 const vec3 color3 = vec3(0.062745, 0.078431, 0.600000);
-const float innerRadius = 0.01;
-const float noiseScale = 0.65;
+const float innerRadius = 0.6;
+const float noiseScale = 0.75;
+#define time uTime
 
 float light1(float intensity, float attenuation, float dist)
 {
@@ -65,47 +67,57 @@ float light2(float intensity, float attenuation, float dist)
     return intensity / (1.0 + dist * dist * attenuation);
 }
 
-vec4 draw(in vec2 vUv) {
+void draw(out vec4 _FragColor, in vec2 vUv) {
   vec2 uv = vUv;
-  float ang = atan(uv.y, uv.x);
+  float ang = atan(uv.x, uv.y);
   float len = length(uv);
   float v0, v1, v2, v3, cl;
   float r0, d0, n0;
   float r, d;
 
-  n0 = snoise3( vec3(uv * noiseScale, time * 0.5) ) * 0.5 + 0.5;
-  r0 = mix(mix(innerRadius, 1.0, 0.4), mix(innerRadius, 1.0, 0.6), n0);
+  // n0 = snoise3( vec3(uv * noiseScale, uTime * 0.5) ) * 0.8 + 1.6;
+  // r0 = mix(mix(innerRadius, 1.0, 0.4), mix(innerRadius, 1.0, 0.6), n0);
+  // d0 = distance(uv, r0 / len * uv);
+  // v0 = light1(1.0, 10.0, d0);
+  // v0 *= smoothstep(r0 * 1.05, r0, len);
+  // cl = cos(ang + uTime * 2.0) * 0.5 + 0.5;
+  r0 = mix(mix(innerRadius, 0.4, 0.5), mix(innerRadius, 0.6, 0.5), n0);
   d0 = distance(uv, r0 / len * uv);
-  v0 = light1(1.0, 10.0, d0);
+  v0 = light1(1.0, 10.0, len);
   v0 *= smoothstep(r0 * 1.05, r0, len);
-  cl = cos(ang + time * 2.0) * 0.5 + 0.5;
+  cl = cos(ang + time * 15.0) * 0.5 + 0.5;
+
+  // light
+  float a = uTime * 10.0;
+  vec2 pos = vec2(cos(a), sin(a)) * r0;
+  d = distance(uv, pos);
+  v1 = light2(1.5, 5.0, d);
+  v1 *= light1(1.0, 50.0 , d0);
 
   // back decay
   v2 = smoothstep(1.0, mix(innerRadius, 1.0, n0 * 0.5), len);
   
   // hole
-  v3 = smoothstep(innerRadius, mix(innerRadius, 1.0, 0.5), len);
+  v3 = smoothstep(0.4, mix(0.4, 0.45, 0.8), len);
 
   // color
   vec3 c = mix(color1, color2, cl);
   vec3 col = mix(color1, color2, cl); 
-
   col = mix(color3, col, v0);
-  col = (col + v1) * v2 * v3;
+
+  col = (col + v1) * v3;
+  // col = (col + v1) * v2 * v3;
   col.rgb = clamp(col.rgb, 0.0, 1.0);
 
-  return extractAlpha(col);
+  _FragColor = extractAlpha(col);
 }
 
 void main()
 {
-  vec2 fragCoord = gl_FragCoord.xy;
-  vec2 uv = (fragCoord*2.0 - uResolution.xy) / uResolution.y;
+  vec2 uv = vUv - vec2(0.5);
+  vec4 col;
+  draw(col, uv);
 
-  vec4 col = draw(uv);
-
-  vec3 bg = BG_COLOR;
-
-  gl_FragColor = vec4(1.0);
-  // gl_FragColor.rgb = mix(bg, col.rgb, col.a);
+  gl_FragColor = col;
+  // gl_FragColor = vec4(position.xy, 1.0, 1.0);
 }
