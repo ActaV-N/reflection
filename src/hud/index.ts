@@ -94,14 +94,15 @@ export class Hud implements HUD {
     // Geometry
     this.handGeometry = new THREE.CircleGeometry(0.2, 300);
     this.handMaterial = new THREE.ShaderMaterial({
-      vertexShader: ringVertexShader,
-      fragmentShader: ringFragmentShader,
+      vertexShader: bubbleVertexShader,
+      fragmentShader: bubbleFragmentShader,
       transparent: true,
       uniforms: {
         uResolution: {
           value: new THREE.Vector2(this.sizes.width, this.sizes.height),
         },
         uTime: { value: 0 },
+        uScale: { value: 1 },
         uClosed: { value: false },
       },
     });
@@ -174,16 +175,25 @@ export class Hud implements HUD {
     /**
      * [[{x, y, z}], [{x, y, z}]]
      */
-    // TODO: left, right를 잘못 인식하는 경우가 생겨서 model을 새로 생성하거나 한손만 쓰는게 좋을듯
     if (results.landmarks && results.gestures && results.handedness) {
       const landmarks = results.landmarks[0];
       const gesture = results.gestures[0];
 
+      // TODO: refactor
       if (gesture) {
         const gestureCategory = gesture[0].categoryName;
 
+        const isClosed = gestureCategory === GESTURE.CLOSED;
+
+        const currentScale = this.handMaterial.uniforms.uScale.value;
+        const targetScale = isClosed ? 0.6 : 1.0;
+        const scaleInterpolation = isClosed ? 0.05 : 0.08;
+        this.handMaterial.uniforms.uScale = {
+          value:
+            currentScale + (targetScale - currentScale) * scaleInterpolation,
+        };
         this.handMaterial.uniforms.uClosed = {
-          value: gestureCategory === GESTURE.CLOSED,
+          value: isClosed,
         };
 
         const point = {
@@ -211,6 +221,17 @@ export class Hud implements HUD {
         this.handMesh.position.y =
           this.handMesh.position.y +
           (Hud.DefaultHandPosition.y - this.handMesh.position.y) * 0.01;
+        const currentScale = this.handMaterial.uniforms.uScale.value;
+
+        const targetScale = 1.0;
+        const scaleInterpolation = 0.08;
+        this.handMaterial.uniforms.uScale = {
+          value:
+            currentScale + (targetScale - currentScale) * scaleInterpolation,
+        };
+        this.handMaterial.uniforms.uClosed = {
+          value: false,
+        };
       }
     }
   }
