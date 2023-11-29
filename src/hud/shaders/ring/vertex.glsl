@@ -43,7 +43,7 @@ void main() {
   vUv = uv;
 
   // MVP
-  vec3 newPosition = position * (snoise3(vec3(uv * noiseScale, uTime * 1.5)) * 0.5 + 1.5) * 0.7;
+  vec3 newPosition = position * (snoise3(vec3(uv * noiseScale, uTime * 1.5)) * 0.5 + 1.5) * 0.6;
   vNewPosition = newPosition;
   vec4 modelViewPosition = modelViewMatrix * vec4(newPosition, 1.0);
   gl_Position = projectionMatrix * modelViewPosition;

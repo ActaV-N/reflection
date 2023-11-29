@@ -21,6 +21,8 @@ canvas {
   transform: rotateY(180deg);
   -webkit-transform: rotateY(180deg); /* Safari and Chrome */
   -moz-transform: rotateY(180deg); /* Firefox */
+
+  z-index: -1;
 }
 
 video {
@@ -31,8 +33,6 @@ video {
   left: 0;
 
   opacity: 0.2;
-
-  z-index: 1;
 
   transform: rotateY(180deg);
   -webkit-transform: rotateY(180deg); /* Safari and Chrome */

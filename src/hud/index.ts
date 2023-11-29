@@ -1,10 +1,16 @@
 import { GestureRecognizer } from "@mediapipe/tasks-vision";
 import * as THREE from "three";
 import { Subject } from "rxjs";
+import { GUI } from "dat.gui";
 import { GESTURE } from "../const";
 import { Camera } from "../camera";
 import { World } from "../world";
-import { ringVertexShader, ringFragmentShader } from "./shaders";
+import {
+  ringVertexShader,
+  ringFragmentShader,
+  bubbleVertexShader,
+  bubbleFragmentShader,
+} from "./shaders";
 
 export class Hud implements HUD {
   private canvas!: HTMLCanvasElement;
@@ -16,6 +22,8 @@ export class Hud implements HUD {
   private subject!: Subject<Hand | null>;
 
   private scene!: THREE.Scene;
+
+  private gui!: GUI;
 
   private renderer!: THREE.WebGLRenderer;
 
@@ -64,6 +72,10 @@ export class Hud implements HUD {
     /**
      * ## THREE JS ##
      */
+    // Dat GUI
+    this.gui = new GUI();
+
+    // Clock
     this.clock = new THREE.Clock();
 
     // Scene
@@ -74,7 +86,7 @@ export class Hud implements HUD {
       canvas: this.canvas,
     });
     this.renderer.setSize(this.sizes.width, this.sizes.height);
-    this.renderer.setClearColor(0x101114);
+    this.renderer.setClearColor(0x1e1e1e);
 
     /**
      * Mesh
@@ -93,6 +105,27 @@ export class Hud implements HUD {
         uClosed: { value: false },
       },
     });
+
+    this.gui
+      .add(this.handMaterial, "fragmentShader", {
+        bubble: bubbleFragmentShader,
+        ring: ringFragmentShader,
+      })
+      .onChange((value) => {
+        this.handMaterial.fragmentShader = value;
+        this.handMaterial.needsUpdate = true;
+      });
+
+    this.gui
+      .add(this.handMaterial, "vertexShader", {
+        bubble: bubbleVertexShader,
+        ring: ringVertexShader,
+      })
+      .onChange((value) => {
+        this.handMaterial.vertexShader = value;
+        this.handMaterial.needsUpdate = true;
+      });
+
     this.handMesh = new THREE.Mesh(this.handGeometry, this.handMaterial);
 
     this.handMesh.position.x = Hud.DefaultHandPosition.x;
@@ -149,8 +182,10 @@ export class Hud implements HUD {
       if (gesture) {
         const gestureCategory = gesture[0].categoryName;
 
-        this.handMaterial.uniforms.uClosed = { value: gestureCategory === GESTURE.CLOSED };
-        
+        this.handMaterial.uniforms.uClosed = {
+          value: gestureCategory === GESTURE.CLOSED,
+        };
+
         const point = {
           x: (landmarks[9].x - 0.5) * 2 * this.aspectRatio,
           y: -(landmarks[9].y - 0.5) * 2,
