@@ -1,4 +1,4 @@
-type EventType = "click";
+type EventType = "grab" | "open" | "handdetected" | "handlost" | "move";
 interface Hand {
   x: number;
   y: number;
@@ -6,22 +6,48 @@ interface Hand {
   gesture: string;
 }
 
-type PointEvent = Hand;
+interface PointEvent {
+  name: EventType;
+  hand: Hand;
+};
 
-interface IEventHandler {
-  (event: PointEvent): void | Promise<void>,
+interface HandLostEvent implements PointEvent {
+  name: 'handlost',
+  hand: null,
 }
 
+interface HandDetectedEvent implements PointEvent {
+  name: 'handdetected',
+  hand: Hand,
+}
+
+interface GrabEvent implements PointEvent {
+  name: 'grab',
+  hand: Hand,
+}
+
+interface OpenEvent implements PointEvent {
+  name: 'open',
+  hand: Hand,
+}
+
+interface MoveEvent implements PointEvent {
+  name: 'move',
+  hand: Hand,
+}
+
+type AllEvents = {
+  'grab': GrabEvent,
+  'open': OpenEvent,
+  'handdetected': HandDetectedEvent,
+  'handlost': HandLostEvent,
+  'move': MoveEvent,
+}
+type IEventHandler<T = AllEvents[keyof AllEvents]> = (event: T) => void;
+
+
 interface IEventListener {
-  (event: EventType, handler: IEventHandler): void;
-  (
-    event: EventType,
-    handler: IEventHandler
-  ): void;
-  (
-    event: EventType,
-    handler: IEventHandler
-  ): void;
+  (event: EventType, handler: IEventHandler<AllEvents[EventType]>): void;
 }
 
 interface HUD {

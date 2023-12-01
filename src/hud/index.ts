@@ -13,17 +13,10 @@ import {
 } from "./shaders";
 
 export class Hud implements HUD {
-  private canvas!: HTMLCanvasElement;
-
-  private sizes!: { width: number; height: number };
-
-  private aspectRatio!: number;
-
-  private subject!: Subject<Hand | null>;
-
+  /**
+   * THREE JS properties
+   */
   private scene!: THREE.Scene;
-
-  private gui!: GUI;
 
   private renderer!: THREE.WebGLRenderer;
 
@@ -37,6 +30,34 @@ export class Hud implements HUD {
 
   private clock!: THREE.Clock;
 
+  /**
+   * Setting properties
+   */
+  private canvas!: HTMLCanvasElement;
+
+  private sizes!: { width: number; height: number };
+
+  private aspectRatio!: number;
+
+  private subject!: Subject<Hand | null>;
+
+  private gui!: GUI;
+
+  /**
+   * Hand properties
+   */
+  private targetPosition!: { x: number; y: number };
+
+  private movingInterpolation: number = 0.05;
+
+  private targetScale: number = 1.0;
+
+  private scaleV: number = 0;
+
+  /**
+   * Public properties
+   */
+  // hand position
   public point: Hand = {
     x: 0,
     y: 0,
@@ -64,7 +85,7 @@ export class Hud implements HUD {
     this.sizes = world.sizes;
     this.aspectRatio = this.sizes.width / this.sizes.height;
 
-    Hud.DefaultHandPosition = {
+    this.targetPosition = Hud.DefaultHandPosition = {
       x: 0 * this.aspectRatio,
       y: -0.7,
     };
@@ -157,9 +178,87 @@ export class Hud implements HUD {
     // Initial sizing
     this.resize();
 
-    this.addEventListener("click", (event: PointEvent) => {
-      console.log(event);
+    /**
+     * Internal event handler
+     */
+    // Handlers
+    this.addEventListener("move", (event) => {
+      const { x, y } = (event as MoveEvent).hand;
+
+      this.targetPosition = { x, y };
     });
+
+    this.addEventListener("open", (event) => {
+      console.log(event);
+      // Control shader Uniforms
+      this.scaleV = 0;
+      this.targetScale = 0.6;
+
+      /**
+       * Control shader Uniforms
+       */
+      // isClosed
+      this.handMaterial.uniforms.uClosed = {
+        value: false,
+      };
+    });
+
+    this.addEventListener("grab", (event) => {
+      console.log(event);
+      // Inner interpolation
+      this.targetScale = 0.4;
+
+      /**
+       * Control shader Uniforms
+       */
+      // isClosed
+      this.handMaterial.uniforms.uClosed = {
+        value: true,
+      };
+    });
+
+    this.addEventListener("handdetected", (event) => {
+      console.log(event);
+      // Inner interpolation
+      this.targetScale = 0.7;
+    });
+
+    this.addEventListener("handlost", (event) => {
+      console.log(event);
+      const { x, y } = Hud.DefaultHandPosition;
+      this.targetPosition = { x, y };
+      // Inner interpolation
+      this.targetScale = 1.0;
+    });
+  }
+
+  private moveHandTo(pos: { x: number; y: number }, interpolation: number) {
+    this.handMesh.position.x =
+      this.handMesh.position.x +
+      (pos.x - this.handMesh.position.x) * interpolation;
+    this.handMesh.position.y =
+      this.handMesh.position.y +
+      (pos.y - this.handMesh.position.y) * interpolation;
+  }
+
+  private scaleHandTo(gesture: (typeof GESTURE)[keyof typeof GESTURE]) {
+    /**
+     * Control shader Uniforms
+     */
+    // Scale
+    const currentScale = this.handMaterial.uniforms.uScale.value;
+    let nextScale;
+    if (gesture === GESTURE.OPEN) {
+      this.scaleV += (this.targetScale - currentScale) / 15;
+      this.scaleV *= 0.88;
+
+      nextScale = currentScale + this.scaleV;
+    } else {
+      nextScale = currentScale + (this.targetScale - currentScale) * 0.08;
+    }
+    this.handMaterial.uniforms.uScale = {
+      value: nextScale,
+    };
   }
 
   recognizeHands(elapsedTime: number) {
@@ -175,101 +274,94 @@ export class Hud implements HUD {
     /**
      * [[{x, y, z}], [{x, y, z}]]
      */
+    let _gesture = GESTURE.NONE;
     if (results.landmarks && results.gestures && results.handedness) {
       const landmarks = results.landmarks[0];
       const gesture = results.gestures[0];
 
-      // TODO: refactor
       if (gesture) {
-        const gestureCategory = gesture[0].categoryName;
-
-        const isClosed = gestureCategory === GESTURE.CLOSED;
-
-        const currentScale = this.handMaterial.uniforms.uScale.value;
-        const targetScale = isClosed ? 0.6 : 1.0;
-        const scaleInterpolation = isClosed ? 0.05 : 0.08;
-        this.handMaterial.uniforms.uScale = {
-          value:
-            currentScale + (targetScale - currentScale) * scaleInterpolation,
-        };
-        this.handMaterial.uniforms.uClosed = {
-          value: isClosed,
-        };
+        _gesture = gesture[0].categoryName;
 
         const point = {
           x: (landmarks[9].x - 0.5) * 2 * this.aspectRatio,
           y: -(landmarks[9].y - 0.5) * 2,
-          gesture: gestureCategory,
+          gesture: _gesture,
         };
-
-        this.handMesh.position.x =
-          this.handMesh.position.x +
-          (point.x - this.handMesh.position.x) * 0.05;
-        this.handMesh.position.y =
-          this.handMesh.position.y +
-          (point.y - this.handMesh.position.y) * 0.05;
 
         this.point = point;
         this.subject.next(this.point);
       }
 
       if (results.landmarks.length === 0) {
+        _gesture = GESTURE.NONE;
         this.subject.next(null);
-        this.handMesh.position.x =
-          this.handMesh.position.x +
-          (Hud.DefaultHandPosition.x - this.handMesh.position.x) * 0.01;
-        this.handMesh.position.y =
-          this.handMesh.position.y +
-          (Hud.DefaultHandPosition.y - this.handMesh.position.y) * 0.01;
-        const currentScale = this.handMaterial.uniforms.uScale.value;
-
-        const targetScale = 1.0;
-        const scaleInterpolation = 0.08;
-        this.handMaterial.uniforms.uScale = {
-          value:
-            currentScale + (targetScale - currentScale) * scaleInterpolation,
-        };
-        this.handMaterial.uniforms.uClosed = {
-          value: false,
-        };
       }
     }
+
+    this.scaleHandTo(_gesture);
   }
 
   addEventListener(event: EventType, eventHandler: IEventHandler) {
     let prevGesture = GESTURE.NONE;
-
-    let currentEvent: string = "None";
+    let prevHand: Hand | null = null;
 
     this.subject.subscribe((hand: Hand | null) => {
       if (!hand) {
+        if (prevHand && !hand) {
+          ["handlost"].includes(event) &&
+            eventHandler({
+              name: "handlost",
+              hand,
+            });
+        }
+
         prevGesture = GESTURE.NONE;
-        currentEvent = "None";
+        prevHand = null;
         return;
       }
 
-      if (prevGesture === GESTURE.CLOSED && hand.gesture === GESTURE.OPEN) {
-        currentEvent = "click";
+      if (!prevHand && hand) {
+        ["handdetected"].includes(event) &&
+          eventHandler({
+            name: "handdetected",
+            hand,
+          });
       }
 
-      if (["click"].includes(event)) {
-        if (currentEvent === "click") {
-          eventHandler(hand);
-        }
+      if (prevGesture === GESTURE.CLOSED && hand.gesture === GESTURE.OPEN) {
+        ["open"].includes(event) &&
+          eventHandler({
+            name: "open",
+            hand,
+          });
       }
+
+      if (prevGesture !== GESTURE.CLOSED && hand.gesture === GESTURE.CLOSED) {
+        ["grab"].includes(event) &&
+          eventHandler({
+            name: "grab",
+            hand,
+          });
+      }
+
+      ["move"].includes(event) &&
+        eventHandler({
+          name: "move",
+          hand,
+        });
 
       // Set for next subscription
-      currentEvent = "None";
-
       if (hand.gesture !== GESTURE.NONE) {
         prevGesture = hand.gesture;
       }
+      prevHand = hand;
     });
   }
 
   animate() {
     const elapsedTime = this.clock.getElapsedTime();
     this.recognizeHands(elapsedTime);
+    this.moveHandTo(this.targetPosition, this.movingInterpolation);
     this.renderer.render(this.scene, this.hudCamera);
   }
 
