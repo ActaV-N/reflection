@@ -32,7 +32,7 @@ video {
   top: 0;
   left: 0;
 
-  opacity: 0.2;
+  opacity: 0;
 
   transform: rotateY(180deg);
   -webkit-transform: rotateY(180deg); /* Safari and Chrome */
