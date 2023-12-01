@@ -192,7 +192,7 @@ export class Hud implements HUD {
       console.log(event);
       // Control shader Uniforms
       this.scaleV = 0;
-      this.targetScale = 0.6;
+      this.targetScale = 0.7;
 
       /**
        * Control shader Uniforms
@@ -220,7 +220,7 @@ export class Hud implements HUD {
     this.addEventListener("handdetected", (event) => {
       console.log(event);
       // Inner interpolation
-      this.targetScale = 0.6;
+      this.targetScale = 0.7;
     });
 
     this.addEventListener("handlost", (event) => {
