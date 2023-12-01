@@ -220,7 +220,7 @@ export class Hud implements HUD {
     this.addEventListener("handdetected", (event) => {
       console.log(event);
       // Inner interpolation
-      this.targetScale = 0.7;
+      this.targetScale = 0.6;
     });
 
     this.addEventListener("handlost", (event) => {
@@ -328,18 +328,19 @@ export class Hud implements HUD {
           });
       }
 
+      
+      if (prevGesture !== GESTURE.CLOSED && hand.gesture === GESTURE.CLOSED) {
+        ["grab"].includes(event) &&
+        eventHandler({
+          name: "grab",
+          hand,
+        });
+      }
+
       if (prevGesture === GESTURE.CLOSED && hand.gesture === GESTURE.OPEN) {
         ["open"].includes(event) &&
           eventHandler({
             name: "open",
-            hand,
-          });
-      }
-
-      if (prevGesture !== GESTURE.CLOSED && hand.gesture === GESTURE.CLOSED) {
-        ["grab"].includes(event) &&
-          eventHandler({
-            name: "grab",
             hand,
           });
       }
