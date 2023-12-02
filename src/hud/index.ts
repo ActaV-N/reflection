@@ -87,7 +87,7 @@ export class Hud implements HUD {
 
     this.targetPosition = Hud.DefaultHandPosition = {
       x: 0 * this.aspectRatio,
-      y: -0.7,
+      y: -0.6,
     };
 
     /**
