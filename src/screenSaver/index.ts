@@ -38,6 +38,7 @@ export class MainScreenSaver implements ScreenSaver {
 
     // scene
     this.scene = new THREE.Scene();
+    this.scene.background = new THREE.Color('#F4FDFF')
     this.scene.add(testMesh);
     this.scene.add(this.camera);
 
@@ -66,7 +67,6 @@ export class MainScreenSaver implements ScreenSaver {
 
   setRenderer(renderer: THREE.WebGLRenderer): void {
     this.renderer = renderer;
-    this.renderer.setClearColor(0x1e1e1e, 1);
   }
 
   resize(): void {

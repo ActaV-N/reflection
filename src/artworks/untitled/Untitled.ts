@@ -40,6 +40,7 @@ export class Untitled implements Artwork {
 
     // scene
     this.scene = new THREE.Scene();
+    this.scene.background = new THREE.Color('#F6D05F')
     this.scene.add(testMesh);
     this.scene.add(this.camera);
 
