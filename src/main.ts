@@ -3,6 +3,8 @@ import { FilesetResolver, GestureRecognizer } from "@mediapipe/tasks-vision";
 import { Camera } from "./camera";
 import { Hud } from "./hud";
 import { World } from "./world";
+import { MainScreenSaver } from "./screenSaver";
+import { Untitled } from "./artworks";
 
 (async function () {
   const vision = await FilesetResolver.forVisionTasks(
@@ -23,7 +25,13 @@ import { World } from "./world";
   const world = new World();
   const hud = new Hud(world, camera, gestureRecognizer);
 
+  const screenSaver = new MainScreenSaver();
+
+  const untitled = new Untitled();
+  
   world.initialize(hud);
+  world.setScreenSaver(screenSaver);
+  world.setArtworks([untitled]);
 
   world.animate();
   window.addEventListener("resize", () => {

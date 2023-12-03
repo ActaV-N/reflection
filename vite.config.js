@@ -7,4 +7,5 @@ export default defineConfig({
     cors: false,
   },
   plugins: [glsl()],
+  publicDir: "public",
 });

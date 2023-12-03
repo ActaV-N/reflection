@@ -1,5 +1,5 @@
 import * as THREE from "three";
-export class MainScreenSaver implements ScreenSaver {
+export class Untitled implements Artwork {
   /**
    * setting properties
    */
@@ -18,10 +18,11 @@ export class MainScreenSaver implements ScreenSaver {
   // scene
   private scene!: THREE.Scene;
 
-  private renderer!: THREE.WebGLRenderer;
-
   // renderTarget
   public renderTarget!: THREE.WebGLRenderTarget;
+
+  // renderer
+  private renderer!: THREE.WebGLRenderer;
 
   constructor() {
     /**
@@ -32,9 +33,10 @@ export class MainScreenSaver implements ScreenSaver {
     this.camera.position.set(0, 0, 3);
 
     // Meshes
-    const testGeometry = new THREE.BoxGeometry(1, 1, 1);
+    const testGeometry = new THREE.CircleGeometry(1, 32);
     const testMaterial = new THREE.MeshBasicMaterial({ color: "red" });
     const testMesh = new THREE.Mesh(testGeometry, testMaterial);
+    testMesh.position.set(0, 1, 0);
 
     // scene
     this.scene = new THREE.Scene();
@@ -42,23 +44,24 @@ export class MainScreenSaver implements ScreenSaver {
     this.scene.add(this.camera);
 
     // renderTarget
-    // NOTE: for what?
     this.renderTarget = new THREE.WebGLRenderTarget(
       this.sizes.width,
       this.sizes.height,
       {
         minFilter: THREE.LinearFilter,
         magFilter: THREE.LinearFilter,
+        format: THREE.RGBAFormat,
+        stencilBuffer: false,
       }
     )!;
   }
 
   render(delta: number, rtt: boolean): void {
-    if(rtt) {
+    if (rtt) {
       this.renderer.setRenderTarget(this.renderTarget);
       this.renderer.clear();
       this.renderer.render(this.scene, this.camera);
-    } else{
+    } else {
       this.renderer.setRenderTarget(null);
       this.renderer.render(this.scene, this.camera);
     }
@@ -66,12 +69,14 @@ export class MainScreenSaver implements ScreenSaver {
 
   setRenderer(renderer: THREE.WebGLRenderer): void {
     this.renderer = renderer;
-    this.renderer.setClearColor(0x1e1e1e, 1);
   }
 
   resize(): void {
     this.sizes.width = window.innerWidth;
     this.sizes.height = window.innerHeight;
     this.sizes.aspectRatio = window.innerWidth / window.innerHeight;
+
+    this.renderer.setSize(this.sizes.width, this.sizes.height);
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   }
 }

@@ -104,7 +104,7 @@ export class Hud implements HUD {
     });
     this.renderer.setSize(this.sizes.width, this.sizes.height);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    this.renderer.setClearColor(0x000000, 1);
+    this.renderer.setClearColor(0x000000, 0);
 
     /**
      * Mesh
@@ -356,7 +356,7 @@ export class Hud implements HUD {
     });
   }
 
-  animate() {
+  render() {
     const elapsedTime = this.clock.getElapsedTime();
     this.recognizeHands(elapsedTime);
     this.moveHandTo(this.targetPosition, this.movingInterpolation);

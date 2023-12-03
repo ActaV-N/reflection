@@ -55,21 +55,28 @@ interface HUD {
 
   resize(): void;
 
-  animate(): void;
+  render(): void;
 
   addEventListener: IEventListener;
 }
-
 interface Artwork {
   resize(): void;
 
-  animate(): void;
+  render(delta: number, rtt: boolean): void;
+
+  setRenderer(renderer: THREE.WebGLRenderer): void;
+
+  renderTarget: THREE.WebGLRenderTarget;
 }
 
-interface ScreenSaver {
+interface ScreenSaver implements Artwork {
   resize(): void;
 
-  animate(): void;
+  render(delta: number, rtt: boolean): void;
+
+  setRenderer(renderer: THREE.WebGLRenderer): void;
+
+  renderTarget: THREE.WebGLRenderTarget;
 }
 
 declare module '*.glsl' {
