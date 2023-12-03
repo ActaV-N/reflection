@@ -40,20 +40,14 @@ export class Untitled implements Artwork {
 
     // scene
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color('#F6D05F')
+    this.scene.background = new THREE.Color("#F6D05F");
     this.scene.add(testMesh);
     this.scene.add(this.camera);
 
     // renderTarget
     this.renderTarget = new THREE.WebGLRenderTarget(
       this.sizes.width,
-      this.sizes.height,
-      {
-        minFilter: THREE.LinearFilter,
-        magFilter: THREE.LinearFilter,
-        format: THREE.RGBAFormat,
-        stencilBuffer: false,
-      }
+      this.sizes.height
     )!;
   }
 

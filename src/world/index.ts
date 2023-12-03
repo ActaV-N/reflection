@@ -106,7 +106,7 @@ export class World {
      */
     this.hud = hud;
     this.hud.addEventListener("open", () => {
-      if(this.currentScene === 'screenSaver'){
+      if (this.currentScene === "screenSaver") {
         this.setArtworkTo("untitled");
       }
     });
@@ -120,7 +120,7 @@ export class World {
       this.transitionMaterial.uniforms.tDiffuse1.value =
         this.artworks[this.currentScene].renderTarget.texture;
 
-      this.nextScene = this.currentScene = title;
+      this.nextScene = title;
 
       this.transitionMaterial.uniforms.tDiffuse2.value =
         this.artworks[this.nextScene].renderTarget.texture;
@@ -129,14 +129,23 @@ export class World {
 
   private artworkTransition(elapsedTime: number) {
     if (this.needTransition) {
-      const t = (1 + Math.cos(Math.min(2 * (elapsedTime - this.capturedTime) + Math.PI, Math.PI * 2))) / 2;
+      const t =
+        (1 +
+          Math.cos(
+            Math.min(
+              2 * (elapsedTime - this.capturedTime) + Math.PI,
+              Math.PI * 2
+            )
+          )) /
+        2;
       const transition = THREE.MathUtils.smoothstep(t, 0, 1);
       this.transitionMaterial.uniforms.uMixRatio.value = transition;
 
-      if(t === 1) {
+      if (t === 1) {
         this.needTransition = false;
+        this.currentScene = this.nextScene;
         this.transitionMaterial.uniforms.tDiffuse1.value =
-        this.artworks[this.currentScene].renderTarget.texture;
+          this.artworks[this.currentScene].renderTarget.texture;
         this.transitionMaterial.uniforms.uMixRatio.value = 0;
       }
     }
@@ -152,10 +161,18 @@ export class World {
 
     this.artworkTransition(elapsedTime);
 
-    this.artworks[this.currentScene].render(delta, true);
-    this.artworks[this.nextScene].render(delta, true);
-    this.renderer.setRenderTarget(null);
-    this.renderer.render(this.transitionScene, this.transitionCamera);
+    const transitionValue = this.transitionMaterial.uniforms.uMixRatio.value;
+
+    if (transitionValue === 0) {
+      this.artworks[this.currentScene].render(delta, false);
+    } else if (transitionValue === 1) {
+      this.artworks[this.nextScene].render(delta, false);
+    } else {
+      this.artworks[this.currentScene].render(delta, true);
+      this.artworks[this.nextScene].render(delta, true);
+      this.renderer.setRenderTarget(null);
+      this.renderer.render(this.transitionScene, this.transitionCamera);
+    }
 
     requestAnimationFrame(this.animate.bind(this));
   }

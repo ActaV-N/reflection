@@ -38,28 +38,23 @@ export class MainScreenSaver implements ScreenSaver {
 
     // scene
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color('#F4FDFF')
+    this.scene.background = new THREE.Color("#F4FDFF");
     this.scene.add(testMesh);
     this.scene.add(this.camera);
 
     // renderTarget
-    // NOTE: for what?
     this.renderTarget = new THREE.WebGLRenderTarget(
       this.sizes.width,
-      this.sizes.height,
-      {
-        minFilter: THREE.LinearFilter,
-        magFilter: THREE.LinearFilter,
-      }
+      this.sizes.height
     )!;
   }
 
   render(delta: number, rtt: boolean): void {
-    if(rtt) {
+    if (rtt) {
       this.renderer.setRenderTarget(this.renderTarget);
       this.renderer.clear();
       this.renderer.render(this.scene, this.camera);
-    } else{
+    } else {
       this.renderer.setRenderTarget(null);
       this.renderer.render(this.scene, this.camera);
     }
