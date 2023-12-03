@@ -108,8 +108,6 @@ export class World {
     this.hud.addEventListener("open", () => {
       if(this.currentScene === 'screenSaver'){
         this.setArtworkTo("untitled");
-      } else{
-        this.setArtworkTo("screenSaver");
       }
     });
   }
@@ -126,26 +124,6 @@ export class World {
 
       this.transitionMaterial.uniforms.tDiffuse2.value =
         this.artworks[this.nextScene].renderTarget.texture;
-
-      // const time = {
-      //   normalizedTime: 0,
-      // }
-      // new TWEEN.Tween(time)
-      // .to({ normalizedTime: Math.PI / 4 }, 1.5)
-      // .start()
-      // .onUpdate(() => {
-      //   const t =
-      //     (1 + Math.cos(4 * time.normalizedTime + Math.PI)) / 2;
-      //   const transition = THREE.MathUtils.smoothstep(t, 0, 1);
-      //   this.transitionMaterial.uniforms.uMixRatio.value = transition;
-      // })
-      // .onComplete(() => {
-      //   console.log('complete');
-      //   this.needTransition = false;
-      //   this.transitionMaterial.uniforms.tDiffuse1.value =
-      //   this.artworks[this.currentScene].renderTarget.texture;
-      //   this.transitionMaterial.uniforms.uMixRatio.value = 0;
-      // });
     }
   }
 
@@ -218,6 +196,7 @@ export class World {
     this.setResolution();
   }
 
+  // NOTE: transition2.glsl을 사용할 때 필요한 Uniform이라 필요없을수도 있다.
   private setResolution() {
     if (this.transitionMaterial) {
       this.transitionMaterial.uniforms.uResolution.value.x = this.sizes.width;
