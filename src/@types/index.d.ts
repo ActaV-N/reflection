@@ -51,6 +51,8 @@ interface IEventListener {
 }
 
 interface HUD {
+  point: Hand;
+
   resize(): void;
 
   animate(): void;

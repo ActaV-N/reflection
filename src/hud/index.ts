@@ -33,8 +33,6 @@ export class Hud implements HUD {
   /**
    * Setting properties
    */
-  private canvas!: HTMLCanvasElement;
-
   private sizes!: { width: number; height: number };
 
   private aspectRatio!: number;
@@ -80,8 +78,6 @@ export class Hud implements HUD {
     /**
      * Canvas
      */
-    this.canvas = document.querySelector("#hud-webgl")!;
-
     this.sizes = world.sizes;
     this.aspectRatio = this.sizes.width / this.sizes.height;
 
@@ -104,10 +100,11 @@ export class Hud implements HUD {
 
     // Renderer
     this.renderer = new THREE.WebGLRenderer({
-      canvas: this.canvas,
+      canvas: document.querySelector("#hud-webgl")!,
     });
     this.renderer.setSize(this.sizes.width, this.sizes.height);
-    this.renderer.setClearColor(0x1e1e1e);
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    this.renderer.setClearColor(0x000000, 1);
 
     /**
      * Mesh

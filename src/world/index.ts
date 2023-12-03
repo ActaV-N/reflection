@@ -1,3 +1,5 @@
+import { MainScreenSaver } from "../screenSaver";
+
 export class World {
   public sizes: { width: number; height: number; } = {
     width: window.innerWidth,
@@ -5,9 +7,19 @@ export class World {
   }
 
   private hud!: HUD;
+  
+  /**
+   * Screen Saver
+  */
+  private screenSaver!: ScreenSaver;
 
   constructor(){
-    // const canvas = document.querySelector('#world-webgl')!;
+    // Screen Saver
+    this.screenSaver = new MainScreenSaver();
+
+    /**
+     * THREE JS
+     */
   }
 
   initialize(hud: HUD) {
@@ -22,6 +34,7 @@ export class World {
 
   animate() {
     this.hud.animate();
+    this.screenSaver.animate();
 
     requestAnimationFrame(this.animate.bind(this));
   }
@@ -33,14 +46,6 @@ export class World {
     // Update sizes
     this.sizes.width = window.innerWidth
     this.sizes.height = window.innerHeight
-
-    // Update camera
-    // camera.aspect = sizes.width / sizes.height
-    // camera.updateProjectionMatrix()
-
-    // // Update renderer
-    // renderer.setSize(sizes.width, sizes.height)
-    // renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
   };
 
   resize() {
