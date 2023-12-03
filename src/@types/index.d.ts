@@ -1,3 +1,4 @@
+type ArtworkTitle = "screenSaver" | "untitled";
 type EventType = "grab" | "open" | "handdetected" | "handlost" | "move";
 interface Hand {
   x: number;

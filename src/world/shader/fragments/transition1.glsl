@@ -13,7 +13,5 @@ void main() {
   float r = uMixRatio * (1.0 + 0.1 * 2.0) - 0.1;
   float mixf = clamp((transitionTexel.r - r) * (1.0 / 0.1), 0.0, 1.0);
 
-  gl_FragColor = mix(texel1, texel2, mixf);
-  // gl_FragColor = texel1;
-  // gl_FragColor = vec4(vUv.x, vUv.y, 0.0, 1.0);
+  gl_FragColor = mix(texel2, texel1, mixf);
 }

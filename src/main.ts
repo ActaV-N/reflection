@@ -30,8 +30,9 @@ import { Untitled } from "./artworks";
   const untitled = new Untitled();
   
   world.initialize(hud);
-  world.setScreenSaver(screenSaver);
-  world.setArtworks([untitled]);
+  world.setProject(screenSaver, {
+    untitled
+  });
 
   world.animate();
   window.addEventListener("resize", () => {

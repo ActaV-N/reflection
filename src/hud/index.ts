@@ -186,7 +186,7 @@ export class Hud implements HUD {
     });
 
     this.addEventListener("open", (event) => {
-      console.log(event);
+      // console.log(event);
       // Control shader Uniforms
       this.scaleV = 0;
       this.targetScale = 0.7;
@@ -201,7 +201,7 @@ export class Hud implements HUD {
     });
 
     this.addEventListener("grab", (event) => {
-      console.log(event);
+      // console.log(event);
       // Inner interpolation
       this.targetScale = 0.4;
 
@@ -215,13 +215,13 @@ export class Hud implements HUD {
     });
 
     this.addEventListener("handdetected", (event) => {
-      console.log(event);
+      // console.log(event);
       // Inner interpolation
       this.targetScale = 0.7;
     });
 
     this.addEventListener("handlost", (event) => {
-      console.log(event);
+      // console.log(event);
       const { x, y } = Hud.DefaultHandPosition;
       this.targetPosition = { x, y };
       // Inner interpolation

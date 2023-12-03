@@ -1,7 +1,2 @@
-import vertexShader from './vertex.glsl';
-import fragmentShader from './fragment.glsl';
-
-export {
-  vertexShader,
-  fragmentShader,
-}
+export {default as vertexShader} from "./vertex.glsl";
+export * from './fragments';
