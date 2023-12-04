@@ -1,4 +1,7 @@
 import * as THREE from "three";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
+import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader";
+
 export class MainScreenSaver implements ScreenSaver {
   /**
    * setting properties
@@ -23,6 +26,11 @@ export class MainScreenSaver implements ScreenSaver {
   // renderTarget
   public renderTarget!: THREE.WebGLRenderTarget;
 
+  /**
+   * Objects
+   */
+  private mainSphere!: THREE.Group;
+
   constructor() {
     /**
      * THREE JS
@@ -36,20 +44,39 @@ export class MainScreenSaver implements ScreenSaver {
     const testMaterial = new THREE.MeshBasicMaterial({ color: "red" });
     const testMesh = new THREE.Mesh(testGeometry, testMaterial);
 
+    // Main Sphere
+    const dracoLoader = new DRACOLoader();
+    dracoLoader.setDecoderPath("/draco/");
+
+    const loader = new GLTFLoader();
+    loader.setDRACOLoader(dracoLoader);
+
     // scene
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color("#F4FDFF");
     this.scene.add(testMesh);
     this.scene.add(this.camera);
 
+    loader.load("blender/projectSphere.glb", (gltf) => {
+      this.mainSphere = gltf.scene;
+
+      this.scene.add(this.mainSphere);
+    });
+
     // renderTarget
     this.renderTarget = new THREE.WebGLRenderTarget(
       this.sizes.width,
-      this.sizes.height
+      this.sizes.height,
     )!;
   }
 
   render(delta: number, rtt: boolean): void {
+    if (this.mainSphere) {
+      this.mainSphere.rotation.x = 50;
+      this.mainSphere.rotation.y += 0.01;
+      // this.mainSphere.rotateY();
+    }
+
     if (rtt) {
       this.renderer.setRenderTarget(this.renderTarget);
       this.renderer.clear();
