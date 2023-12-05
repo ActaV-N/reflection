@@ -34,20 +34,20 @@ export class Untitled implements Artwork {
 
     // Meshes
     const testGeometry = new THREE.CircleGeometry(1, 32);
-    const testMaterial = new THREE.MeshBasicMaterial({ color: "red" });
+    const testMaterial = new THREE.MeshBasicMaterial({ color: "#1e1e1e" });
     const testMesh = new THREE.Mesh(testGeometry, testMaterial);
     testMesh.position.set(0, 1, 0);
 
     // scene
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color("#F6D05F");
+    this.scene.background = new THREE.Color("#f7f7f7");
     this.scene.add(testMesh);
     this.scene.add(this.camera);
 
     // renderTarget
     this.renderTarget = new THREE.WebGLRenderTarget(
       this.sizes.width,
-      this.sizes.height
+      this.sizes.height,
     )!;
   }
 
