@@ -59,7 +59,8 @@ export class MainScreenSaver implements ScreenSaver {
 
     loader.load("blender/projectSphere.glb", (gltf) => {
       this.mainSphere = gltf.scene;
-
+      this.mainSphere.position.set(1.2 * this.sizes.aspectRatio, -0.5 * this.sizes.aspectRatio, 0);
+      this.mainSphere.scale.set(0.6, 0.6, 0.6);
       this.scene.add(this.mainSphere);
     });
 
@@ -72,9 +73,11 @@ export class MainScreenSaver implements ScreenSaver {
 
   render(delta: number, rtt: boolean): void {
     if (this.mainSphere) {
-      this.mainSphere.rotation.x = 50;
+      // this.mainSphere.quaternion.x = 30;
+      this.mainSphere.rotation.x = Math.PI / 20;
+      this.mainSphere.rotation.z = - Math.PI / 20;
+
       this.mainSphere.rotation.y += 0.01;
-      // this.mainSphere.rotateY();
     }
 
     if (rtt) {
