@@ -42,7 +42,7 @@ export class MainScreenSaver implements ScreenSaver {
     this.camera.position.set(0, 0, 3);
 
     // Meshes
-    const testGeometry = new THREE.SphereGeometry(0.45);
+    const testGeometry = new THREE.SphereGeometry(0.5);
     const testMaterial = new THREE.MeshBasicMaterial({
       map: sphereTexture,
       alphaHash: true,
@@ -50,14 +50,15 @@ export class MainScreenSaver implements ScreenSaver {
     });
     this.mainSphere = new THREE.Mesh(testGeometry, testMaterial);
     this.mainSphere.position.set(
-      0.6 * this.sizes.aspectRatio,
+      0.75 * this.sizes.aspectRatio,
       -0.3 * this.sizes.aspectRatio,
       0,
     );
+    this.mainSphere.rotation.reorder("XZY");
 
     // scene
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color("#F4FDFF");
+    this.scene.background = new THREE.Color("#f7f7f7");
     this.scene.add(this.mainSphere);
     this.scene.add(this.camera);
 

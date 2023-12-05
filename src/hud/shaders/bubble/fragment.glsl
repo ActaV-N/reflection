@@ -24,8 +24,8 @@ vec4 extractAlpha(vec3 colorIn)
     return colorOut;
 }
 
-const vec3 color1 = vec3(0.611765, 0.262745, 0.996078);
-const vec3 color2 = vec3(0.298039, 0.760784, 0.913725);
+const vec3 color1 = vec3(0.611765, 0.662745, 0.496078);
+const vec3 color2 = vec3(0.198039, 0.460784, 0.713725);
 const vec3 color3 = vec3(0.062745, 0.078431, 0.600000);
 const float innerRadius = 0.6;
 const float noiseScale = 0.75;
@@ -51,21 +51,20 @@ void draw(out vec4 _FragColor, in vec2 vUv) {
   r0 = mix(mix(innerRadius, 0.4, 0.5), mix(innerRadius, 0.6, 0.5), n0);
   d0 = distance(uv, r0 / len * uv);
   v0 = light1(1.0, 10.0, len);
-  v0 *= smoothstep(r0 * 1.05, r0, len);
+  v0 *= smoothstep(r0 * 1.03, r0, len);
   cl = cos(ang + time * 15.0) * 0.5 + 0.5;
 
   // light
   float a = uTime * 10.0;
   vec2 pos = vec2(cos(a), sin(a)) * r0;
   d = distance(uv, pos);
-  v1 = light2(1.5, 5.0, d);
+  v1 = light2(1.3, 6.0, d);
   v1 *= light1(1.0, 20.0 , d0);
   
   // hole
-  v3 = smoothstep(0.5, mix(0.5, 0.45, 1.2), len);
+  v3 = smoothstep(0.5, mix(0.5, 0.48, 1.2), len);
 
   // color
-  vec3 c = mix(color1, color2, cl);
   vec3 col = mix(color1, color2, cl); 
   col = mix(color3, col, v0);
 
