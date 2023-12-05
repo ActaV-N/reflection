@@ -1,6 +1,4 @@
 import * as THREE from "three";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
-import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader";
 
 export class MainScreenSaver implements ScreenSaver {
   /**
@@ -29,40 +27,39 @@ export class MainScreenSaver implements ScreenSaver {
   /**
    * Objects
    */
-  private mainSphere!: THREE.Group;
+  private mainSphere!: THREE.Mesh;
 
   constructor() {
     /**
      * THREE JS
      */
+    // Texture
+    const textureLoader = new THREE.TextureLoader();
+    const sphereTexture = textureLoader.load("textures/sphere.png");
+
     // Camera
-    this.camera = new THREE.PerspectiveCamera(75, this.sizes.aspectRatio);
+    this.camera = new THREE.PerspectiveCamera(50, this.sizes.aspectRatio);
     this.camera.position.set(0, 0, 3);
 
     // Meshes
-    const testGeometry = new THREE.BoxGeometry(1, 1, 1);
-    const testMaterial = new THREE.MeshBasicMaterial({ color: "red" });
-    const testMesh = new THREE.Mesh(testGeometry, testMaterial);
-
-    // Main Sphere
-    const dracoLoader = new DRACOLoader();
-    dracoLoader.setDecoderPath("/draco/");
-
-    const loader = new GLTFLoader();
-    loader.setDRACOLoader(dracoLoader);
+    const testGeometry = new THREE.SphereGeometry(0.45);
+    const testMaterial = new THREE.MeshBasicMaterial({
+      map: sphereTexture,
+      alphaHash: true,
+      side: THREE.DoubleSide,
+    });
+    this.mainSphere = new THREE.Mesh(testGeometry, testMaterial);
+    this.mainSphere.position.set(
+      0.6 * this.sizes.aspectRatio,
+      -0.3 * this.sizes.aspectRatio,
+      0,
+    );
 
     // scene
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color("#F4FDFF");
-    this.scene.add(testMesh);
+    this.scene.add(this.mainSphere);
     this.scene.add(this.camera);
-
-    loader.load("blender/projectSphere.glb", (gltf) => {
-      this.mainSphere = gltf.scene;
-      this.mainSphere.position.set(1.2 * this.sizes.aspectRatio, -0.5 * this.sizes.aspectRatio, 0);
-      this.mainSphere.scale.set(0.6, 0.6, 0.6);
-      this.scene.add(this.mainSphere);
-    });
 
     // renderTarget
     this.renderTarget = new THREE.WebGLRenderTarget(
@@ -73,11 +70,10 @@ export class MainScreenSaver implements ScreenSaver {
 
   render(delta: number, rtt: boolean): void {
     if (this.mainSphere) {
-      // this.mainSphere.quaternion.x = 30;
       this.mainSphere.rotation.x = Math.PI / 20;
-      this.mainSphere.rotation.z = - Math.PI / 20;
+      this.mainSphere.rotation.z = -Math.PI / 20;
 
-      this.mainSphere.rotation.y += 0.01;
+      this.mainSphere.rotation.y += 0.003;
     }
 
     if (rtt) {
