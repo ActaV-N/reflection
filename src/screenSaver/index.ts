@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { backgroundFragmentShader, backgroundVertexShader } from './shaders';
 
 export class MainScreenSaver implements ScreenSaver {
   /**
@@ -29,6 +30,8 @@ export class MainScreenSaver implements ScreenSaver {
    */
   private mainSphere!: THREE.Mesh;
 
+  private planeBackground!: THREE.Mesh;
+
   constructor() {
     /**
      * THREE JS
@@ -41,26 +44,38 @@ export class MainScreenSaver implements ScreenSaver {
     this.camera = new THREE.PerspectiveCamera(50, this.sizes.aspectRatio);
     this.camera.position.set(0, 0, 3);
 
-    // Meshes
-    const testGeometry = new THREE.SphereGeometry(0.5);
-    const testMaterial = new THREE.MeshBasicMaterial({
+    /**
+     * Meshes
+     */
+    // Text sphere
+    const mainSphereGeometry = new THREE.SphereGeometry(0.5);
+    const mainSphereMaterial = new THREE.MeshBasicMaterial({
       map: sphereTexture,
       alphaHash: true,
       side: THREE.DoubleSide,
     });
-    this.mainSphere = new THREE.Mesh(testGeometry, testMaterial);
-    this.mainSphere.position.set(
-      0.75 * this.sizes.aspectRatio,
-      -0.3 * this.sizes.aspectRatio,
-      0,
-    );
+    this.mainSphere = new THREE.Mesh(mainSphereGeometry, mainSphereMaterial);
     this.mainSphere.rotation.reorder("XZY");
+    this.mainSphere.position.set(0, 0, 2);
+
+    // Main sphere
+    const planeBackgroundGeometry = new THREE.PlaneGeometry(15, 15);
+    const planeBackgroundMaterial = new THREE.ShaderMaterial({
+      vertexShader: backgroundVertexShader,
+      fragmentShader: backgroundFragmentShader,
+    });
+
+    this.planeBackground = new THREE.Mesh(planeBackgroundGeometry, planeBackgroundMaterial);
+    this.planeBackground.position.set(0, 0, -5);
 
     // scene
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color("#f7f7f7");
-    this.scene.add(this.mainSphere);
     this.scene.add(this.camera);
+
+    // Adding objects
+    this.scene.add(this.mainSphere);
+    this.scene.add(this.planeBackground);
 
     // renderTarget
     this.renderTarget = new THREE.WebGLRenderTarget(
@@ -74,7 +89,7 @@ export class MainScreenSaver implements ScreenSaver {
       this.mainSphere.rotation.x = Math.PI / 20;
       this.mainSphere.rotation.z = -Math.PI / 20;
 
-      this.mainSphere.rotation.y += 0.003;
+      this.mainSphere.rotation.y += 0.002;
     }
 
     if (rtt) {

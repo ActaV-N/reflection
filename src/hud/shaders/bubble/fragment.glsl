@@ -52,10 +52,10 @@ void draw(out vec4 _FragColor, in vec2 vUv) {
   d0 = distance(uv, r0 / len * uv);
   v0 = light1(1.0, 10.0, len);
   v0 *= smoothstep(r0 * 1.03, r0, len);
-  cl = cos(ang + time * 15.0) * 0.5 + 0.5;
+  cl = cos(ang + time * 4.0) * 0.5 + 0.5;
 
   // light
-  float a = uTime * 10.0;
+  float a = uTime * 4.5;
   vec2 pos = vec2(cos(a), sin(a)) * r0;
   d = distance(uv, pos);
   v1 = light2(1.3, 6.0, d);
