@@ -37,9 +37,9 @@ export class World {
   /**
    * Artworks
    */
-  private currentScene!: ArtworkTitle;
+  public currentScene!: ArtworkTitle;
 
-  private nextScene!: ArtworkTitle;
+  public nextScene!: ArtworkTitle;
 
   private artworks!: Record<ArtworkTitle, Artwork>;
 

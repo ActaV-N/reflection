@@ -38,4 +38,16 @@ import { Untitled } from "./artworks";
   window.addEventListener("resize", () => {
     world.resize();
   });
+
+  /**
+   * Dom 제어
+   */
+  // Screen saver elements
+  const startText = document.querySelector('.screenSaver-start')!;
+
+  hud.addEventListener('open', () => {
+    if(world.currentScene === 'screenSaver') {
+      startText.classList.add('hidden');
+    }
+  });
 })();

@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
 * {
   margin: 0;
   padding: 0;
@@ -37,4 +39,54 @@ video {
   transform: rotateY(180deg);
   -webkit-transform: rotateY(180deg); /* Safari and Chrome */
   -moz-transform: rotateY(180deg); /* Firefox */
+}
+
+#app {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+}
+
+@keyframes blinking {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100%{
+    opacity: 0;
+  }
+}
+
+#app section {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+}
+
+#screenSaver .screenSaver-start {
+  position: absolute;
+  bottom: 80px;
+  left: 50%;
+
+  transform: translate(-50%, 0);
+
+  color: #fff;
+  font-size: 25px;
+
+  animation: blinking 2s infinite cubic-bezier(0.37, 0, 0.63, 1);
+  font-family: 'roboto';
+  font-weight: 400;
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+  }
+}
+#screenSaver .screenSaver-start.hidden {
+  animation: fadeOut forwards 0.3s cubic-bezier(0.37, 0, 0.63, 1);
 }
