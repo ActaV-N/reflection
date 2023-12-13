@@ -5,6 +5,7 @@ import { Hud } from "./hud";
 import { World } from "./world";
 import { MainScreenSaver } from "./screenSaver";
 import { Untitled } from "./artworks";
+import { fadeOutStartText, initScreenSaver, initUntitled } from "./scenes";
 
 (async function () {
   const vision = await FilesetResolver.forVisionTasks(
@@ -22,11 +23,10 @@ import { Untitled } from "./artworks";
   });
 
   const camera = await Camera.setUpCamera();
-  const world = new World();
+  const world = World.getWorld();
   const hud = new Hud(world, camera, gestureRecognizer);
 
   const screenSaver = new MainScreenSaver();
-
   const untitled = new Untitled();
   
   world.initialize(hud);
@@ -42,12 +42,13 @@ import { Untitled } from "./artworks";
   /**
    * Dom 제어
    */
-  // Screen saver elements
-  const startText = document.querySelector('.screenSaver-start')!;
+  initScreenSaver();
 
   hud.addEventListener('open', (event) => {
     if(world.currentScene === 'screenSaver') {
-      startText.classList.add('hidden');
+      world.setArtworkTo('untitled');
+      fadeOutStartText();
+      initUntitled();
     }
     
     if(event.hand) {

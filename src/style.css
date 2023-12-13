@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
 
 * {
   margin: 0;
@@ -47,18 +47,6 @@ video {
   height: 100vh;
 }
 
-@keyframes blinking {
-  0% {
-    opacity: 0;
-  }
-  50% {
-    opacity: 1;
-  }
-  100%{
-    opacity: 0;
-  }
-}
-
 #app section {
   position: absolute;
   top: 0;
@@ -77,16 +65,29 @@ video {
   color: #fff;
   font-size: 25px;
 
-  animation: blinking 2s infinite cubic-bezier(0.37, 0, 0.63, 1);
-  font-family: 'roboto';
+  font-family: "roboto";
   font-weight: 400;
 }
 
-@keyframes fadeOut {
-  to {
-    opacity: 0;
-  }
+section .control-panel {
+  position: absolute;
+  bottom: 160px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  display:flex;
+  justify-content: center;
+  align-items: center;
 }
-#screenSaver .screenSaver-start.hidden {
-  animation: fadeOut forwards 0.3s cubic-bezier(0.37, 0, 0.63, 1);
+
+.control-panel .panel-item {
+  width: 50px;
+  height: 50px;
+
+  border-radius:25px;
+  border: 1px solid #1e1e1e;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

@@ -45,7 +45,7 @@ export class World {
 
   private needTransition: boolean = false;
 
-  constructor() {
+  private constructor() {
     /**
      * THREE JS
      */
@@ -100,16 +100,20 @@ export class World {
     this._resize();
   }
 
+  private static world: World;
+  static getWorld() {
+    if(!this.world) {
+      this.world = new World();
+    }
+
+    return this.world;
+  }
+
   initialize(hud: HUD) {
     /**
      * HUD
      */
     this.hud = hud;
-    this.hud.addEventListener("open", () => {
-      if (this.currentScene === "screenSaver") {
-        this.setArtworkTo("untitled");
-      }
-    });
   }
 
   public setArtworkTo(title: ArtworkTitle) {
