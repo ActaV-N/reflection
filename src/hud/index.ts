@@ -369,4 +369,15 @@ export class Hud implements HUD {
 
     this.renderer.setSize(this.sizes.width, this.sizes.height);
   }
+
+  static getDomPointFromHand(hand: Hand) {
+    const aspectRatio = window.innerWidth / window.innerHeight
+
+    const point = {
+      x: (-hand.x / aspectRatio / 2 + 0.5) * window.innerWidth,
+      y: (-hand.y / 2 + 0.5) * window.innerHeight,
+    };
+
+    return point;
+  }
 }

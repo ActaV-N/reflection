@@ -45,9 +45,17 @@ import { Untitled } from "./artworks";
   // Screen saver elements
   const startText = document.querySelector('.screenSaver-start')!;
 
-  hud.addEventListener('open', () => {
+  hud.addEventListener('open', (event) => {
     if(world.currentScene === 'screenSaver') {
       startText.classList.add('hidden');
+    }
+    
+    if(event.hand) {
+      const point = Hud.getDomPointFromHand(event.hand)
+      const target = document.elementFromPoint(point.x, point.y);
+      if(target) {
+        target.dispatchEvent(new MouseEvent('click'));
+      }
     }
   });
 })();
