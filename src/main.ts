@@ -5,7 +5,7 @@ import { Hud } from "./hud";
 import { World } from "./world";
 import { MainScreenSaver } from "./screenSaver";
 import { Untitled } from "./artworks";
-import { fadeOutStartText, initScreenSaver, initUntitled } from "./scenes";
+import { finishScreenSaver, initScreenSaver, initUntitled } from "./scenes";
 
 (async function () {
   const vision = await FilesetResolver.forVisionTasks(
@@ -44,11 +44,11 @@ import { fadeOutStartText, initScreenSaver, initUntitled } from "./scenes";
    */
   initScreenSaver();
 
-  hud.addEventListener('open', (event) => {
+  hud.addEventListener('open', async (event) => {
     if(world.currentScene === 'screenSaver') {
       world.setArtworkTo('untitled');
-      fadeOutStartText();
-      initUntitled();
+      await finishScreenSaver();
+      await initUntitled();
     }
     
     if(event.hand) {

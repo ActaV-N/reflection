@@ -2,29 +2,21 @@ import { gsap } from "gsap";
 
 const startText = document.querySelector(".screenSaver-start")!;
 
-export const fadeOutStartText = () => {
-  const tl = gsap.timeline();
-  gsap.killTweensOf(startText);
+export const finishScreenSaver = async () => {
+    const tl = gsap.timeline();
+    gsap.killTweensOf('section#screenSaver');
+  
+    tl.to(
+      'section#screenSaver',
+      {
+        autoAlpha: 0,
+        duration: 0.3,
+        ease: "power1.inOut",
+      }
+    );
+}
 
-  tl.to(
-    startText,
-    {
-      autoAlpha: 0,
-      duration: 0.3,
-      ease: "power1.inOut",
-    }
-  );
-};
-
-export const initScreenSaver = () => {
-  gsap.set('section', {
-    autoAlpha: 0,
-  });
-
-  gsap.set('section#screenSaver', {
-    autoAlpha: 1,
-  });
-
+export const initScreenSaver = async () => {
   // Text
   const tl = gsap.timeline({
     repeat: -1,
@@ -33,17 +25,23 @@ export const initScreenSaver = () => {
   gsap.killTweensOf(startText);
 
   tl
+  .addLabel('sceneIn')
+  .to('section#screenSaver', {
+    autoAlpha: 1,
+    duration: 0.5,
+    ease:'power1.inOut'
+  }, 'sceneIn')
   .delay(0.5)
-  .addLabel('fadeIn')
+  .addLabel('textIn')
   .to(startText, {
     autoAlpha: 0,
     duration: 0.6,
     ease: "power1.inOut",
-  }, 'fadeIn')
-  .addLabel('fadeOut', '>')
+  }, 'textIn')
+  .addLabel('textOut', '>')
   .to(startText, {
     autoAlpha: 1,
     duration: 0.6,
     ease: "power1.inOut",
-  }, 'fadeOut')
+  }, 'textOut')
 }
