@@ -5,6 +5,7 @@ const startText = document.querySelector(".screenSaver-start")!;
 export const finishScreenSaver = async () => {
   const tl = gsap.timeline();
   gsap.killTweensOf("section#screenSaver");
+  gsap.killTweensOf(startText);
 
   tl.to("section#screenSaver", {
     autoAlpha: 0,
@@ -15,7 +16,6 @@ export const finishScreenSaver = async () => {
 
 export const initScreenSaver = async () => {
   // Text
-  console.log('?');
   gsap.to("section#screenSaver", {
     autoAlpha: 1,
     duration: 0.5,
@@ -25,7 +25,6 @@ export const initScreenSaver = async () => {
     repeat: -1,
     repeatDelay: 0.5,
   });
-  gsap.killTweensOf(startText);
 
   tl.delay(0.5)
     .addLabel("textIn")
