@@ -1,61 +1,46 @@
 import { gsap } from "gsap";
 import { World } from "../world";
 import { initScreenSaver } from ".";
-const controlPanel = document.querySelector("#untitled .control-panel")!;
+import { closeBtn, finishControlPanel, initControlPanel, panelItems } from "./components";
 
 export const finishUntitled = async () => {
-  const tl = gsap.timeline();
-  gsap.killTweensOf('section#untitled');
+  await finishControlPanel();
 
-  tl.to(
-    'section#untitled',
-    {
-      autoAlpha: 0,
-      duration: 0.3,
-      ease: "power1.inOut",
-    }
-  );
-}
+  const tl = gsap.timeline();
+  gsap.killTweensOf("section#untitled");
+
+  tl.to("section#untitled", {
+    autoAlpha: 0,
+    duration: 0.3,
+    ease: "power1.inOut",
+  });
+};
 
 export const initUntitled = async () => {
-  // Control Panel
-  const panelItems = controlPanel.querySelectorAll(".panel-item")!;
-  gsap.killTweensOf(controlPanel);
-  const tl = gsap
-    .timeline()
-    .set(panelItems, {
-      autoAlpha: 0,
-    })
-    .set(controlPanel, {
-      autoAlpha: 1,
-    });
+  await initControlPanel();
 
-  tl
-  .addLabel('sceneIn')
-  .to('section#untitled', {
-    autoAlpha: 1,
-    duration: 0.5,
-    ease:'power1.inOut'
-  }, 'sceneIn')
-  .addLabel('panelIn', '>')
-  .to(panelItems, {
-    autoAlpha: 1,
-    duration: 0.5,
-    ease: "power1.inOut",
-  }, 'panelIn');
+  const tl = gsap.timeline();
+  tl.addLabel("sceneIn").to(
+    "section#untitled",
+    {
+      autoAlpha: 1,
+      duration: 0.5,
+      ease: "power1.inOut",
+    },
+    "sceneIn"
+  );
 };
 
 (() => {
   const world = World.getWorld();
 
-  gsap.set('section#untitled', {
+  gsap.set("section#untitled", {
     autoAlpha: 0,
   });
 
-  const closeBtn = controlPanel.querySelector(".close")!;
-  closeBtn.addEventListener('click', async () => {
-    world.setArtworkTo('screenSaver');
+  closeBtn.addEventListener("click", async () => {
     await finishUntitled();
     await initScreenSaver();
+    world.setArtworkTo("screenSaver");
   });
-})()
+})();

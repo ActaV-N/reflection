@@ -36,7 +36,7 @@ export class Untitled implements Artwork {
     const testGeometry = new THREE.CircleGeometry(1, 32);
     const testMaterial = new THREE.MeshBasicMaterial({ color: "#1e1e1e" });
     const testMesh = new THREE.Mesh(testGeometry, testMaterial);
-    testMesh.position.set(0, 1, 0);
+    testMesh.position.set(0, -1, 0);
 
     // scene
     this.scene = new THREE.Scene();
