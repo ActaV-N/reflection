@@ -60,3 +60,7 @@ import { finishScreenSaver, initScreenSaver, initUntitled } from "./scenes";
     }
   });
 })();
+
+document.onclick = async function() {
+  await document.body.requestFullscreen();
+}
