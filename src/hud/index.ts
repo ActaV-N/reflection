@@ -2,7 +2,7 @@ import { GestureRecognizer } from "@mediapipe/tasks-vision";
 import * as THREE from "three";
 import { Subject } from "rxjs";
 import { GUI } from "dat.gui";
-import { GESTURE } from "../const";
+import { GESTURE, IPAD_CONST } from "../const";
 import { Camera } from "../camera";
 import { World } from "../world";
 import {
@@ -46,7 +46,7 @@ export class Hud implements HUD {
    */
   private targetPosition!: { x: number; y: number };
 
-  private movingInterpolation: number = 0.05;
+  private movingInterpolation: number = 0.05 * IPAD_CONST;
 
   private targetScale: number = 1.0;
 
@@ -251,7 +251,7 @@ export class Hud implements HUD {
 
       nextScale = currentScale + this.scaleV;
     } else {
-      nextScale = currentScale + (this.targetScale - currentScale) * 0.08;
+      nextScale = currentScale + (this.targetScale - currentScale) * 0.08 * IPAD_CONST;
     }
     this.handMaterial.uniforms.uScale = {
       value: nextScale,

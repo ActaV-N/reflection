@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { backgroundFragmentShader, backgroundVertexShader } from './shaders';
+import { IPAD_CONST } from "../const";
 
 export class MainScreenSaver implements ScreenSaver {
   /**
@@ -89,7 +90,7 @@ export class MainScreenSaver implements ScreenSaver {
       this.mainSphere.rotation.x = Math.PI / 20;
       this.mainSphere.rotation.z = -Math.PI / 20;
 
-      this.mainSphere.rotation.y += 0.02;
+      this.mainSphere.rotation.y += 0.002 * IPAD_CONST;
     }
 
     if (rtt) {
