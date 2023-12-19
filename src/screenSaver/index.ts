@@ -89,7 +89,7 @@ export class MainScreenSaver implements ScreenSaver {
       this.mainSphere.rotation.x = Math.PI / 20;
       this.mainSphere.rotation.z = -Math.PI / 20;
 
-      this.mainSphere.rotation.y += 0.002;
+      this.mainSphere.rotation.y += 0.02;
     }
 
     if (rtt) {
