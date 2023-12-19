@@ -1,4 +1,6 @@
-precision highp float;
+#ifdef GL_ES
+precision lowp float;
+#endif
 
 uniform vec3 uResolution;
 uniform float uTime;

@@ -1,3 +1,6 @@
+#ifdef GL_ES
+precision lowp float;
+#endif
 uniform float uTime;
 uniform float uScale;
 

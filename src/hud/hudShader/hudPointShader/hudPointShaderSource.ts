@@ -1,5 +1,7 @@
 export const VERTEX = `#version 300 es
-
+  #ifdef GL_ES
+  precision mediump float;
+  #endif
   layout(location = 0) 
   in vec4 a_position;
   out vec4 v_color;
@@ -13,7 +15,9 @@ export const VERTEX = `#version 300 es
 `;
 
 export const FRAGMENT = `#version 300 es
-  precision highp float;
+  #ifdef GL_ES
+  precision mediump float;
+  #endif
 
   in vec4 v_color;
   out vec4 color;

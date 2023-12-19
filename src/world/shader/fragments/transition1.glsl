@@ -1,3 +1,6 @@
+#ifdef GL_ES
+precision lowp float;
+#endif
 uniform float uMixRatio;
 uniform sampler2D tDiffuse1;
 uniform sampler2D tDiffuse2;

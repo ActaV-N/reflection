@@ -1,3 +1,6 @@
+#ifdef GL_ES
+precision lowp float;
+#endif
 varying vec2 vUv;
 
 void main() {
