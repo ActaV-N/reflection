@@ -1,14 +1,15 @@
 import { gsap } from "gsap";
 
+export const controlPanel = document.querySelector("#control-panel")!;
+export const panelItems = controlPanel.querySelectorAll(".panel-item")!;
+export const homeBtn = controlPanel.querySelector(".home")!;
+export const nextBtn = controlPanel.querySelector(".next")!;
+export const prevBtn = controlPanel.querySelector(".prev")!;
+
 const OFFSET_X = 50;
 const OFFSET_Y = 30;
-const OFFSET_Y2 = 10;
 
-export const controlPanel = document.querySelector("#untitled .control-panel")!;
-export const panelItems = controlPanel.querySelectorAll(".panel-item")!;
-export const closeBtn = controlPanel.querySelector(".close")!;
-
-export const initControlPanel = async () => {
+export const initControlPanel = async (title?: ArtworkTitle) => {
   gsap.killTweensOf(controlPanel);
 
   const tl = gsap.timeline();
@@ -17,53 +18,96 @@ export const initControlPanel = async () => {
   })
     .set(panelItems, {
       autoAlpha: 0,
-      y: -OFFSET_Y,
+      y: 0,
       x: 0,
+      scale: 0.6,
     })
     .set(controlPanel, {
       autoAlpha: 1,
     });
 
-  tl.delay(0.8)
-    .addLabel("panelIn")
+  tl.delay(0.6).addLabel("panelIn");
+
+  tl.to(
+    homeBtn,
+    {
+      autoAlpha: 1,
+      duration: 0.5,
+      ease: "power1.inOut",
+    },
+    "panelIn+=.2",
+  )
+    .addLabel("homeEnd", ">-.4")
+    .addLabel("prevEnd", ">-.4")
     .to(
-      panelItems,
+      homeBtn,
+      {
+        scale: 1,
+        duration: 1.2,
+        ease: "elastic.inOut",
+      },
+      "panelIn",
+    );
+
+  if (title !== "untitled") {
+    tl.to(
+      prevBtn,
       {
         autoAlpha: 1,
-        stagger: 0.15,
+        duration: 0.5,
         ease: "power1.inOut",
-        duration: 0.5,
       },
-      "panelIn"
+      "homeEnd+=.2",
     )
+      .to(
+        prevBtn,
+        {
+          x: -OFFSET_X,
+          y: OFFSET_Y,
+          duration: 0.5,
+          ease: "power1.out",
+        },
+        "homeEnd",
+      )
+      .addLabel("prevEnd", ">-.2")
+      .to(
+        prevBtn,
+        {
+          scale: 0.85,
+          duration: 1.2,
+          ease: "elastic.inOut",
+        },
+        "homeEnd",
+      );
+  }
+
+  tl.to(
+    nextBtn,
+    {
+      autoAlpha: 1,
+      duration: 0.5,
+      ease: "power1.inOut",
+    },
+    "prevEnd+=.2",
+  )
     .to(
-      ".control-panel .prev",
-      {
-        x: -OFFSET_X,
-        y: -OFFSET_Y + OFFSET_Y2,
-        duration: 0.5,
-        ease: "power1.out",
-      },
-      "panelIn"
-    )
-    .to(
-      ".control-panel .close",
-      {
-        y: 0,
-        duration: 0.5,
-        ease: "power1.out",
-      },
-      "panelIn+=.15"
-    )
-    .to(
-      ".control-panel .next",
+      nextBtn,
       {
         x: OFFSET_X,
-        y: -OFFSET_Y + OFFSET_Y2,
+        y: OFFSET_Y,
         duration: 0.5,
         ease: "power1.out",
       },
-      "panelIn+=.3"
+      "prevEnd",
+    )
+    .to(
+      nextBtn,
+      {
+        scale: 0.85,
+        duration: 1.2,
+        ease: "elastic.inOut",
+      },
+      "prevEnd",
     );
 };
 
@@ -71,29 +115,28 @@ export const finishControlPanel = () =>
   new Promise((resolve) => {
     const tl = gsap.timeline();
 
-    tl.addLabel("panelIn")
+    tl.addLabel("panelOut")
       .to(
         panelItems,
         {
-          y: -OFFSET_Y,
-          x: 0,
-          stagger: 0.2,
-          duration: 0.5,
-          ease: "power1.out",
+          scale: 0.6,
+          stagger: 0.25,
+          duration: 0.8,
+          ease: "expo.out",
         },
-        "panelIn"
+        "panelOut",
       )
       .to(
         panelItems,
         {
           autoAlpha: 0,
-          stagger: 0.2,
+          stagger: 0.25,
           duration: 0.3,
           eaes: "power1.inOut",
           onComplete() {
             resolve("done");
           },
         },
-        "panelIn"
+        "panelOut",
       );
   });

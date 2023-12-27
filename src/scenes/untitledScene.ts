@@ -1,7 +1,12 @@
 import { gsap } from "gsap";
 import { World } from "../world";
 import { initScreenSaver } from ".";
-import { closeBtn, finishControlPanel, initControlPanel, panelItems } from "./components";
+import {
+  homeBtn,
+  finishControlPanel,
+  initControlPanel,
+  panelItems,
+} from "./components";
 
 export const finishUntitled = async () => {
   await finishControlPanel();
@@ -17,7 +22,7 @@ export const finishUntitled = async () => {
 };
 
 export const initUntitled = async () => {
-  await initControlPanel();
+  await initControlPanel("untitled");
 
   const tl = gsap.timeline();
   tl.addLabel("sceneIn").to(
@@ -27,7 +32,7 @@ export const initUntitled = async () => {
       duration: 0.5,
       ease: "power1.inOut",
     },
-    "sceneIn"
+    "sceneIn",
   );
 };
 
@@ -38,7 +43,7 @@ export const initUntitled = async () => {
     autoAlpha: 0,
   });
 
-  closeBtn.addEventListener("click", async () => {
+  homeBtn.addEventListener("click", async () => {
     await finishUntitled();
     await initScreenSaver();
     world.setArtworkTo("screenSaver");

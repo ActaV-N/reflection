@@ -55,9 +55,9 @@ video {
   width: 100%;
 }
 
-#hud-webgl{
-  z-index:10;
-  pointer-events:none;
+#hud-webgl {
+  z-index: 10;
+  pointer-events: none;
 }
 
 #screenSaver .screenSaver-start {
@@ -74,37 +74,50 @@ video {
   font-weight: 400;
 }
 
-section .control-panel {
+#control-panel {
   position: absolute;
   top: 70px;
   left: 50%;
   transform: translateX(-50%);
 
-  display:flex;
+  width: fit-content;
+  height: fit-content;
+
+  display: flex;
   justify-content: center;
   align-items: center;
 
   font-family: "roboto";
+
+  z-index: 20;
 }
 
-.control-panel .panel-item {
+#control-panel .panel-item {
   width: 40px;
   height: 40px;
-  font-size:12px;
+  font-size: 12px;
 
-  border-radius:25px;
-  background-color: rgba(30, 30, 30, 1);
+  border-radius: 25px;
+  background-color: rgba(30, 30, 30, 0.6);
 
   color: #fff;
-  
+
   display: flex;
   align-items: center;
   justify-content: center;
 
-  position:absolute;
-  top:0;
-  left:0;
+  position: absolute;
+  top: 0;
+  left: 0;
 
   opacity: 0;
   visibility: hidden;
+
+  transition: 0.3s background-color cubic-bezier(0.37, 0, 0.63, 1),
+    0.3s border-radius cubic-bezier(0.37, 0, 0.63, 1);
+}
+
+#control-panel .panel-item.hover {
+  border-radius: 20px;
+  background-color: rgba(30, 30, 30, 1);
 }

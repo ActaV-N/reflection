@@ -9,7 +9,7 @@ import { finishScreenSaver, initScreenSaver, initUntitled } from "./scenes";
 
 (async function () {
   const vision = await FilesetResolver.forVisionTasks(
-    "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
+    "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm",
   );
 
   const gestureRecognizer = await GestureRecognizer.createFromOptions(vision, {
@@ -28,10 +28,10 @@ import { finishScreenSaver, initScreenSaver, initUntitled } from "./scenes";
 
   const screenSaver = new MainScreenSaver();
   const untitled = new Untitled();
-  
+
   world.initialize(hud);
   world.setProject(screenSaver, {
-    untitled
+    untitled,
   });
 
   world.animate();
@@ -44,23 +44,39 @@ import { finishScreenSaver, initScreenSaver, initUntitled } from "./scenes";
    */
   initScreenSaver();
 
-  hud.addEventListener('open', async (event) => {
-    if(world.currentScene === 'screenSaver') {
-      world.setArtworkTo('untitled');
+  hud.addEventListener("open", async (event) => {
+    if (world.currentScene === "screenSaver") {
+      world.setArtworkTo("untitled");
       await finishScreenSaver();
       await initUntitled();
     }
-    
-    if(event.hand) {
-      const point = Hud.getDomPointFromHand(event.hand)
+
+    if (event.hand) {
+      const point = Hud.getDomPointFromHand(event.hand);
       const target = document.elementFromPoint(point.x, point.y);
-      if(target) {
-        target.dispatchEvent(new MouseEvent('click'));
+      if (target) {
+        target.dispatchEvent(new MouseEvent("click"));
+      }
+    }
+  });
+
+  hud.addEventListener("move", async (event) => {
+    if (event.hand) {
+      const point = Hud.getDomPointFromHand(event.hand);
+      const target = document.elementFromPoint(point.x, point.y);
+
+      if (target) {
+        if (target.tagName !== "SECTION") {
+          target.classList.add("hover");
+        } else {
+          const hovers = document.querySelectorAll(".hover");
+          hovers.forEach((el) => el.classList.remove("hover"));
+        }
       }
     }
   });
 })();
 
-document.onclick = async function() {
+document.onclick = async function () {
   await document.body.requestFullscreen();
-}
+};
