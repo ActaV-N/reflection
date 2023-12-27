@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { backgroundFragmentShader, backgroundVertexShader } from './shaders';
+import { backgroundFragmentShader, backgroundVertexShader } from "./shaders";
 import { IPAD_CONST } from "../const";
 
 export class MainScreenSaver implements ScreenSaver {
@@ -64,9 +64,17 @@ export class MainScreenSaver implements ScreenSaver {
     const planeBackgroundMaterial = new THREE.ShaderMaterial({
       vertexShader: backgroundVertexShader,
       fragmentShader: backgroundFragmentShader,
+      uniforms: {
+        uResolution: {
+          value: new THREE.Vector2(this.sizes.width, this.sizes.height),
+        },
+      },
     });
 
-    this.planeBackground = new THREE.Mesh(planeBackgroundGeometry, planeBackgroundMaterial);
+    this.planeBackground = new THREE.Mesh(
+      planeBackgroundGeometry,
+      planeBackgroundMaterial,
+    );
     this.planeBackground.position.set(0, 0, -5);
 
     // scene
