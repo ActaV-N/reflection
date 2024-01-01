@@ -1,50 +1,73 @@
 import { gsap } from "gsap";
 
-const startText = document.querySelector(".screenSaver-start")!;
+let ctx: gsap.Context;
 
 export const finishScreenSaver = async () => {
-  const tl = gsap.timeline();
-  gsap.killTweensOf("section#screenSaver");
-  gsap.killTweensOf(startText);
+  ctx?.kill();
+  ctx = gsap.context(() => {
+    const tl = gsap.timeline();
 
-  tl.to("section#screenSaver", {
-    autoAlpha: 0,
-    duration: 0.3,
-    ease: "power1.inOut",
-  });
+    tl.addLabel("finish")
+      .to(
+        "section#screenSaver",
+        {
+          autoAlpha: 0,
+          duration: 0.3,
+          ease: "power1.inOut",
+        },
+        "finish",
+      )
+      .to(
+        ".screenSaver-start",
+        {
+          autoAlpha: 0,
+          duration: 0.3,
+          ease: "power1.inOut",
+        },
+        "finish",
+      );
+  }, "section#screenSaver");
 };
 
 export const initScreenSaver = async () => {
-  // Text
-  gsap.to("section#screenSaver", {
-    autoAlpha: 1,
-    duration: 0.5,
-    ease: "power1.inOut",
-  });
-  const tl = gsap.timeline({
-    repeat: -1,
-    repeatDelay: 0.5,
-  });
+  ctx?.kill();
 
-  tl.delay(0.5)
-    .addLabel("textIn")
-    .to(
-      startText,
-      {
-        autoAlpha: 0,
-        duration: 0.6,
-        ease: "power1.inOut",
-      },
-      "textIn"
-    )
-    .addLabel("textOut", ">")
-    .to(
-      startText,
-      {
-        autoAlpha: 1,
-        duration: 0.6,
-        ease: "power1.inOut",
-      },
-      "textOut"
-    );
+  // Text
+  ctx = gsap.context(() => {
+    gsap.to("section#screenSaver", {
+      autoAlpha: 1,
+      duration: 0.5,
+      ease: "power1.inOut",
+    });
+
+    gsap.set(".screenSaver-start", {
+      autoAlpha: 0,
+    });
+
+    const tl = gsap.timeline({
+      repeat: -1,
+    });
+
+    tl.addLabel("textIn")
+      .to(
+        ".screenSaver-start",
+        {
+          autoAlpha: 1,
+          duration: 0.6,
+          ease: "power1.inOut",
+        },
+        "textIn",
+      )
+      .addLabel("textOut", ">")
+      .to(
+        ".screenSaver-start",
+        {
+          autoAlpha: 0,
+          duration: 0.6,
+          ease: "power1.inOut",
+          delay: 0.5,
+        },
+        "textOut",
+      );
+  }, "section#screenSaver");
 };
