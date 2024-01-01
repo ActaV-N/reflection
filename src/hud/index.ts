@@ -1,7 +1,6 @@
 import { GestureRecognizer } from "@mediapipe/tasks-vision";
 import * as THREE from "three";
 import { Subject } from "rxjs";
-import { GUI } from "dat.gui";
 import { GESTURE, IPAD_CONST } from "../const";
 import { Camera } from "../camera";
 import { World } from "../world";
@@ -39,8 +38,6 @@ export class Hud implements HUD {
 
   private subject!: Subject<Hand | null>;
 
-  private gui!: GUI;
-
   /**
    * Hand properties
    */
@@ -70,7 +67,7 @@ export class Hud implements HUD {
   constructor(
     private world: World,
     private camera: Camera,
-    private gestureRecognizer: GestureRecognizer
+    private gestureRecognizer: GestureRecognizer,
   ) {
     // rxjs
     this.subject = new Subject<Hand | null>();
@@ -89,9 +86,6 @@ export class Hud implements HUD {
     /**
      * ## THREE JS ##
      */
-    // Dat GUI
-    this.gui = new GUI();
-
     // Clock
     this.clock = new THREE.Clock();
 
@@ -125,26 +119,6 @@ export class Hud implements HUD {
       },
     });
 
-    this.gui
-      .add(this.handMaterial, "fragmentShader", {
-        bubble: bubbleFragmentShader,
-        ring: ringFragmentShader,
-      })
-      .onChange((value) => {
-        this.handMaterial.fragmentShader = value;
-        this.handMaterial.needsUpdate = true;
-      });
-
-    this.gui
-      .add(this.handMaterial, "vertexShader", {
-        bubble: bubbleVertexShader,
-        ring: ringVertexShader,
-      })
-      .onChange((value) => {
-        this.handMaterial.vertexShader = value;
-        this.handMaterial.needsUpdate = true;
-      });
-
     this.handMesh = new THREE.Mesh(this.handGeometry, this.handMaterial);
 
     this.handMesh.position.x = Hud.DefaultHandPosition.x;
@@ -161,7 +135,7 @@ export class Hud implements HUD {
       1,
       -1,
       0.1,
-      100
+      100,
     );
 
     this.hudCamera.position.z = 1;
@@ -251,7 +225,8 @@ export class Hud implements HUD {
 
       nextScale = currentScale + this.scaleV;
     } else {
-      nextScale = currentScale + (this.targetScale - currentScale) * 0.08 * IPAD_CONST;
+      nextScale =
+        currentScale + (this.targetScale - currentScale) * 0.08 * IPAD_CONST;
     }
     this.handMaterial.uniforms.uScale = {
       value: nextScale,
@@ -262,7 +237,7 @@ export class Hud implements HUD {
     const nowInMs = Date.now();
     const results = this.gestureRecognizer.recognizeForVideo(
       this.camera.video,
-      nowInMs
+      nowInMs,
     );
 
     const time = elapsedTime / 10;
@@ -325,13 +300,12 @@ export class Hud implements HUD {
           });
       }
 
-      
       if (prevGesture !== GESTURE.CLOSED && hand.gesture === GESTURE.CLOSED) {
         ["grab"].includes(event) &&
-        eventHandler({
-          name: "grab",
-          hand,
-        });
+          eventHandler({
+            name: "grab",
+            hand,
+          });
       }
 
       if (prevGesture === GESTURE.CLOSED && hand.gesture === GESTURE.OPEN) {
@@ -371,7 +345,7 @@ export class Hud implements HUD {
   }
 
   static getDomPointFromHand(hand: Hand) {
-    const aspectRatio = window.innerWidth / window.innerHeight
+    const aspectRatio = window.innerWidth / window.innerHeight;
 
     const point = {
       x: (-hand.x / aspectRatio / 2 + 0.5) * window.innerWidth,

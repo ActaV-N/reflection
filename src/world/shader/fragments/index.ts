@@ -1,2 +1,4 @@
-export { default as perlinTransition } from './transition1.glsl';
-export { default as distortTransition } from './transition2.glsl';
+import perlinTransition from "./perlinTransition.glsl";
+import distortTransition from "./distortTransition.glsl";
+
+export const transitions = { perlinTransition, distortTransition };

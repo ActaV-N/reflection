@@ -46,6 +46,6 @@ export const initUntitled = async () => {
   homeBtn.addEventListener("click", async () => {
     await finishUntitled();
     await initScreenSaver();
-    world.setArtworkTo("screenSaver");
+    world.setArtworkTo("screenSaver", "distortTransition");
   });
 })();

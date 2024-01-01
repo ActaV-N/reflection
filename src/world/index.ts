@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { vertexShader, perlinTransition as fragmentShader } from "./shader";
+import { vertexShader, transitions } from "./shader";
 
 export class World {
   public sizes: { width: number; height: number; aspectRatio: number } = {
@@ -57,7 +57,7 @@ export class World {
 
     this.transitionGeometry = new THREE.PlaneGeometry(
       this.sizes.width,
-      this.sizes.height
+      this.sizes.height,
     );
     this.transitionMaterial = new THREE.ShaderMaterial({
       uniforms: {
@@ -68,12 +68,12 @@ export class World {
         uResolution: { value: new THREE.Vector4() },
       },
       vertexShader,
-      fragmentShader,
+      fragmentShader: transitions["perlinTransition"],
     });
 
     this.transitionMesh = new THREE.Mesh(
       this.transitionGeometry,
-      this.transitionMaterial
+      this.transitionMaterial,
     );
     this.transitionMesh.position.set(0, 0, -2);
 
@@ -84,7 +84,7 @@ export class World {
       window.innerHeight / 2,
       window.innerHeight / -2,
       -10,
-      10
+      10,
     );
 
     // Transition scene
@@ -102,7 +102,7 @@ export class World {
 
   private static world: World;
   static getWorld() {
-    if(!this.world) {
+    if (!this.world) {
       this.world = new World();
     }
 
@@ -116,10 +116,16 @@ export class World {
     this.hud = hud;
   }
 
-  public setArtworkTo(title: ArtworkTitle) {
+  public setArtworkTo(
+    title: ArtworkTitle,
+    transition: keyof typeof transitions = "perlinTransition",
+  ) {
     if (!this.needTransition) {
       this.needTransition = true;
       this.capturedTime = this.clock.getElapsedTime();
+
+      this.transitionMaterial.fragmentShader = transitions[transition];
+      this.transitionMaterial.needsUpdate = true;
 
       this.transitionMaterial.uniforms.tDiffuse1.value =
         this.artworks[this.currentScene].renderTarget.texture;
@@ -138,8 +144,8 @@ export class World {
           Math.cos(
             Math.min(
               2 * (elapsedTime - this.capturedTime) + Math.PI,
-              Math.PI * 2
-            )
+              Math.PI * 2,
+            ),
           )) /
         2;
       const transition = THREE.MathUtils.smoothstep(t, 0, 1);
@@ -183,7 +189,7 @@ export class World {
 
   public setProject(
     screenSaver: Artwork,
-    artworks: Omit<Record<ArtworkTitle, Artwork>, "screenSaver">
+    artworks: Omit<Record<ArtworkTitle, Artwork>, "screenSaver">,
   ) {
     const firstArtworkTitle = Object.keys(artworks)[0] as ArtworkTitle;
     this.currentScene = "screenSaver";
