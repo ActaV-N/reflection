@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { fragmentShader, vertexShader } from "./shaders";
 export class Untitled implements Artwork {
   /**
    * setting properties
@@ -15,6 +16,9 @@ export class Untitled implements Artwork {
   // camera
   private camera!: THREE.PerspectiveCamera;
 
+  // clock
+  private clock!: THREE.Clock;
+
   // scene
   private scene!: THREE.Scene;
 
@@ -24,6 +28,14 @@ export class Untitled implements Artwork {
   // renderer
   private renderer!: THREE.WebGLRenderer;
 
+  /**
+   * Meshes
+   */
+  // Geometry
+
+  // Material
+  private testMaterial!: THREE.ShaderMaterial;
+
   constructor() {
     /**
      * THREE JS
@@ -32,10 +44,25 @@ export class Untitled implements Artwork {
     this.camera = new THREE.PerspectiveCamera(75, this.sizes.aspectRatio);
     this.camera.position.set(0, 0, 3);
 
+    // Clock
+    this.clock = new THREE.Clock();
+
     // Meshes
-    const testGeometry = new THREE.CircleGeometry(1, 32);
-    const testMaterial = new THREE.MeshBasicMaterial({ color: "#1e1e1e" });
-    const testMesh = new THREE.Mesh(testGeometry, testMaterial);
+    const testGeometry = new THREE.PlaneGeometry(15, 15);
+
+    this.testMaterial = new THREE.ShaderMaterial({
+      vertexShader,
+      fragmentShader,
+      uniforms: {
+        uResolution: {
+          value: new THREE.Vector2(this.sizes.width, this.sizes.height),
+        },
+        uTime: {
+          value: 0,
+        },
+      },
+    });
+    const testMesh = new THREE.Mesh(testGeometry, this.testMaterial);
     testMesh.position.set(0, -1, 0);
 
     // scene
@@ -52,6 +79,7 @@ export class Untitled implements Artwork {
   }
 
   render(delta: number, rtt: boolean): void {
+    const time = this.clock.getElapsedTime();
     if (rtt) {
       this.renderer.setRenderTarget(this.renderTarget);
       this.renderer.clear();
@@ -60,6 +88,7 @@ export class Untitled implements Artwork {
       this.renderer.setRenderTarget(null);
       this.renderer.render(this.scene, this.camera);
     }
+    this.testMaterial.uniforms.uTime.value = time;
   }
 
   setRenderer(renderer: THREE.WebGLRenderer): void {
