@@ -64,11 +64,6 @@ export class MainScreenSaver implements ScreenSaver {
     const planeBackgroundMaterial = new THREE.ShaderMaterial({
       vertexShader: backgroundVertexShader,
       fragmentShader: backgroundFragmentShader,
-      uniforms: {
-        uResolution: {
-          value: new THREE.Vector2(this.sizes.width, this.sizes.height),
-        },
-      },
     });
 
     this.planeBackground = new THREE.Mesh(
