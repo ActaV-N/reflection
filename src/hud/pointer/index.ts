@@ -1,1 +1,1 @@
-export * from "./mainHand";
+export * from "./mainPointer";
