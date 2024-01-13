@@ -4,12 +4,7 @@ import { Subject } from "rxjs";
 import { GESTURE, IPAD_CONST } from "../const";
 import { Camera } from "../camera";
 import { World } from "../world";
-import {
-  ringVertexShader,
-  ringFragmentShader,
-  bubbleVertexShader,
-  bubbleFragmentShader,
-} from "./shaders";
+import { bubbleVertexShader, bubbleFragmentShader } from "./shaders";
 
 export class Hud implements HUD {
   /**
@@ -101,6 +96,10 @@ export class Hud implements HUD {
     this.renderer.setClearColor(0x000000, 0);
 
     /**
+     * Pointer
+     */
+    // this.pointer =
+    /**
      * Mesh
      */
     // Geometry
@@ -144,8 +143,6 @@ export class Hud implements HUD {
     /**
      * Shader
      */
-    // this.shader = new HudShader(this.gl);
-
     // Initial sizing
     this.resize();
 

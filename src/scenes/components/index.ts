@@ -1,1 +1,2 @@
-export * from './controlPanel';
+export * from "./controlPanel";
+export * from "./hud";
