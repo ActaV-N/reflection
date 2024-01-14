@@ -5,6 +5,8 @@ import { GESTURE, IPAD_CONST } from "../const";
 import { Camera } from "../camera";
 import { World } from "../world";
 import { bubbleVertexShader, bubbleFragmentShader } from "./shaders";
+import { MainPointer } from "./pointer";
+import { Pointer } from "../libs";
 
 export class Hud implements HUD {
   /**
@@ -32,6 +34,11 @@ export class Hud implements HUD {
   private aspectRatio!: number;
 
   private subject!: Subject<Hand | null>;
+
+  /**
+   * Pointer
+   */
+  private pointer!: Pointer;
 
   /**
    * Hand properties
@@ -98,32 +105,10 @@ export class Hud implements HUD {
     /**
      * Pointer
      */
-    // this.pointer =
-    /**
-     * Mesh
-     */
-    // Geometry
-    this.handGeometry = new THREE.CircleGeometry(0.2, 300);
-    this.handMaterial = new THREE.ShaderMaterial({
-      vertexShader: bubbleVertexShader,
-      fragmentShader: bubbleFragmentShader,
-      transparent: true,
-      uniforms: {
-        uResolution: {
-          value: new THREE.Vector2(this.sizes.width, this.sizes.height),
-        },
-        uTime: { value: 0 },
-        uScale: { value: 1 },
-        uClosed: { value: false },
-      },
-    });
-
-    this.handMesh = new THREE.Mesh(this.handGeometry, this.handMaterial);
-
-    this.handMesh.position.x = Hud.DefaultHandPosition.x;
-    this.handMesh.position.y = Hud.DefaultHandPosition.y;
-
-    this.scene.add(this.handMesh);
+    this.pointer = new MainPointer();
+    
+    this.pointer.setHandPosition(Hud.DefaultHandPosition);
+    this.scene.add(this.pointer.handMesh);
 
     /**
      * Camera
