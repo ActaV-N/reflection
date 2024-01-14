@@ -41,17 +41,6 @@ export class Hud implements HUD {
   private pointer!: Pointer;
 
   /**
-   * Hand properties
-   */
-  private targetPosition!: { x: number; y: number };
-
-  private movingInterpolation: number = 0.05 * IPAD_CONST;
-
-  private targetScale: number = 1.0;
-
-  private scaleV: number = 0;
-
-  /**
    * Public properties
    */
   // hand position
@@ -80,11 +69,6 @@ export class Hud implements HUD {
     this.sizes = world.sizes;
     this.aspectRatio = this.sizes.width / this.sizes.height;
 
-    this.targetPosition = Hud.DefaultHandPosition = {
-      x: 0 * this.aspectRatio,
-      y: -0.6,
-    };
-
     /**
      * ## THREE JS ##
      */
@@ -105,9 +89,14 @@ export class Hud implements HUD {
     /**
      * Pointer
      */
+    Hud.DefaultHandPosition = {
+      x: 0 * this.aspectRatio,
+      y: -0.6,
+    };
+
     this.pointer = new MainPointer();
-    
-    this.pointer.setHandPosition(Hud.DefaultHandPosition);
+
+    this.pointer.setDefaultPosition(Hud.DefaultHandPosition);
     this.scene.add(this.pointer.handMesh);
 
     /**
@@ -135,95 +124,29 @@ export class Hud implements HUD {
      * Internal event handler
      */
     // Handlers
-    this.addEventListener("move", (event) => {
-      const { x, y } = (event as MoveEvent).hand;
+    this.addEventListener("move", this.pointer.moveHandler.bind(this.pointer));
 
-      this.targetPosition = { x, y };
-    });
+    this.addEventListener("open", this.pointer.openHandler.bind(this.pointer));
 
-    this.addEventListener("open", (event) => {
-      // console.log(event);
-      // Control shader Uniforms
-      this.scaleV = 0;
-      this.targetScale = 0.7;
+    this.addEventListener("grab", this.pointer.grabHandler.bind(this.pointer));
 
-      /**
-       * Control shader Uniforms
-       */
-      // isClosed
-      this.handMaterial.uniforms.uClosed = {
-        value: false,
-      };
-    });
+    this.addEventListener(
+      "handdetected",
+      this.pointer.handDetectHandler.bind(this.pointer),
+    );
 
-    this.addEventListener("grab", (event) => {
-      // console.log(event);
-      // Inner interpolation
-      this.targetScale = 0.4;
-
-      /**
-       * Control shader Uniforms
-       */
-      // isClosed
-      this.handMaterial.uniforms.uClosed = {
-        value: true,
-      };
-    });
-
-    this.addEventListener("handdetected", (event) => {
-      // console.log(event);
-      // Inner interpolation
-      this.targetScale = 0.7;
-    });
-
-    this.addEventListener("handlost", (event) => {
-      // console.log(event);
-      const { x, y } = Hud.DefaultHandPosition;
-      this.targetPosition = { x, y };
-      // Inner interpolation
-      this.targetScale = 1.0;
-    });
+    this.addEventListener(
+      "handlost",
+      this.pointer.handLostHandler.bind(this.pointer),
+    );
   }
 
-  private moveHandTo(pos: { x: number; y: number }, interpolation: number) {
-    this.handMesh.position.x =
-      this.handMesh.position.x +
-      (pos.x - this.handMesh.position.x) * interpolation;
-    this.handMesh.position.y =
-      this.handMesh.position.y +
-      (pos.y - this.handMesh.position.y) * interpolation;
-  }
-
-  private scaleHandTo(gesture: (typeof GESTURE)[keyof typeof GESTURE]) {
-    /**
-     * Control shader Uniforms
-     */
-    // Scale
-    const currentScale = this.handMaterial.uniforms.uScale.value;
-    let nextScale;
-    if (gesture === GESTURE.OPEN) {
-      this.scaleV += (this.targetScale - currentScale) / 15;
-      this.scaleV *= 0.88;
-
-      nextScale = currentScale + this.scaleV;
-    } else {
-      nextScale =
-        currentScale + (this.targetScale - currentScale) * 0.08 * IPAD_CONST;
-    }
-    this.handMaterial.uniforms.uScale = {
-      value: nextScale,
-    };
-  }
-
-  recognizeHands(elapsedTime: number) {
+  recognizeHands() {
     const nowInMs = Date.now();
     const results = this.gestureRecognizer.recognizeForVideo(
       this.camera.video,
       nowInMs,
     );
-
-    const time = elapsedTime / 10;
-    this.handMaterial.uniforms.uTime = { value: time };
 
     /**
      * [[{x, y, z}], [{x, y, z}]]
@@ -252,7 +175,7 @@ export class Hud implements HUD {
       }
     }
 
-    this.scaleHandTo(_gesture);
+    this.pointer.handleGesture(_gesture);
   }
 
   addEventListener(event: EventType, eventHandler: IEventHandler) {
@@ -314,8 +237,8 @@ export class Hud implements HUD {
 
   render() {
     const elapsedTime = this.clock.getElapsedTime();
-    this.recognizeHands(elapsedTime);
-    this.moveHandTo(this.targetPosition, this.movingInterpolation);
+    this.recognizeHands();
+    this.pointer.render(elapsedTime);
     this.renderer.render(this.scene, this.hudCamera);
   }
 
