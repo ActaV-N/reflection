@@ -5,11 +5,12 @@ import { Hud } from "./hud";
 import { World } from "./world";
 import { MainScreenSaver } from "./screenSaver";
 import { Untitled } from "./artworks";
-import { finishScreenSaver, initScreenSaver, initUntitled } from "./scenes";
+import { finishScreenSaver, initScreenSaver, initUntitled } from "./transitions";
+import { MainPointer } from "./hud/pointer";
 
 (async function () {
   const vision = await FilesetResolver.forVisionTasks(
-    "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm",
+    "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
   );
 
   const gestureRecognizer = await GestureRecognizer.createFromOptions(vision, {
@@ -24,7 +25,15 @@ import { finishScreenSaver, initScreenSaver, initUntitled } from "./scenes";
 
   const camera = await Camera.setUpCamera();
   const world = World.getWorld();
-  const hud = new Hud(world, camera, gestureRecognizer);
+
+  const mainPointer = new MainPointer();
+
+  const hud = new Hud({
+    world,
+    camera,
+    gestureRecognizer,
+    initialPointer: mainPointer,
+  });
 
   const screenSaver = new MainScreenSaver();
   const untitled = new Untitled();

@@ -1,10 +1,9 @@
 import { GestureRecognizer } from "@mediapipe/tasks-vision";
 import * as THREE from "three";
 import { Subject } from "rxjs";
-import { GESTURE, IPAD_CONST } from "../const";
+import { GESTURE } from "../const";
 import { Camera } from "../camera";
 import { World } from "../world";
-import { bubbleVertexShader, bubbleFragmentShader } from "./shaders";
 import { MainPointer } from "./pointer";
 import { Pointer } from "../libs";
 
@@ -12,6 +11,10 @@ export class Hud implements HUD {
   /**
    * THREE JS properties
    */
+  private world!: World;
+
+  private camera!: Camera;
+
   private scene!: THREE.Scene;
 
   private renderer!: THREE.WebGLRenderer;
@@ -19,10 +22,6 @@ export class Hud implements HUD {
   private hudCamera!: THREE.OrthographicCamera;
 
   public handMesh!: THREE.Mesh;
-
-  private handMaterial!: THREE.ShaderMaterial;
-
-  private handGeometry!: THREE.CircleGeometry;
 
   private clock!: THREE.Clock;
 
@@ -38,7 +37,11 @@ export class Hud implements HUD {
   /**
    * Pointer
    */
+  private pointers: Map<string, Pointer> = new Map();
+
   private pointer!: Pointer;
+
+  private initialPointer: Pointer;
 
   /**
    * Public properties
@@ -55,18 +58,27 @@ export class Hud implements HUD {
     y: number;
   };
 
-  constructor(
-    private world: World,
-    private camera: Camera,
-    private gestureRecognizer: GestureRecognizer,
-  ) {
+  private gestureRecognizer: GestureRecognizer;
+
+  constructor(args: {
+    world: World;
+    camera: Camera;
+    gestureRecognizer: GestureRecognizer;
+    initialPointer: Pointer;
+  }) {
+    // args
+    this.world = args.world;
+    this.camera = args.camera;
+    this.gestureRecognizer = args.gestureRecognizer;
+    this.initialPointer = args.initialPointer;
+
     // rxjs
     this.subject = new Subject<Hand | null>();
 
     /**
      * Canvas
      */
-    this.sizes = world.sizes;
+    this.sizes = this.world.sizes;
     this.aspectRatio = this.sizes.width / this.sizes.height;
 
     /**
@@ -94,7 +106,8 @@ export class Hud implements HUD {
       y: -0.6,
     };
 
-    this.pointer = new MainPointer();
+    this.pointer = this.initialPointer;
+    this.pointers.set("initial", this.initialPointer);
 
     this.pointer.setDefaultPosition(Hud.DefaultHandPosition);
     this.scene.add(this.pointer.handMesh);
@@ -108,7 +121,7 @@ export class Hud implements HUD {
       1,
       -1,
       0.1,
-      100,
+      100
     );
 
     this.hudCamera.position.z = 1;
@@ -132,20 +145,35 @@ export class Hud implements HUD {
 
     this.addEventListener(
       "handdetected",
-      this.pointer.handDetectHandler.bind(this.pointer),
+      this.pointer.handDetectHandler.bind(this.pointer)
     );
 
     this.addEventListener(
       "handlost",
-      this.pointer.handLostHandler.bind(this.pointer),
+      this.pointer.handLostHandler.bind(this.pointer)
     );
+  }
+
+  public enrollPointer(key: string, pointer: Pointer) {
+    if (this.pointers.has(key)) {
+      throw new Error("Already enrolled pointer key");
+    }
+
+    this.pointers.set(key, pointer);
+  }
+
+  public setPointer(key: string) {
+    if (!this.pointers.has(key)) {
+      throw new Error("Not enrolled pointer key");
+    }
+    this.pointer = this.pointers.get(key)!;
   }
 
   recognizeHands() {
     const nowInMs = Date.now();
     const results = this.gestureRecognizer.recognizeForVideo(
       this.camera.video,
-      nowInMs,
+      nowInMs
     );
 
     /**

@@ -4,11 +4,10 @@ import { initScreenSaver } from ".";
 import {
   homeBtn,
   finishControlPanel,
-  initControlPanel,
-  panelItems,
 } from "./components";
+import { commonFinisher, commonInitializer } from "./common";
 
-export const finishUntitled = async () => {
+export const finishUntitled = commonFinisher(async () => {
   await finishControlPanel();
 
   const tl = gsap.timeline();
@@ -19,11 +18,9 @@ export const finishUntitled = async () => {
     duration: 0.3,
     ease: "power1.inOut",
   });
-};
+}, 'untitled');
 
-export const initUntitled = async () => {
-  await initControlPanel("untitled");
-
+export const initUntitled = commonInitializer(async () => {
   const tl = gsap.timeline();
   tl.addLabel("sceneIn").to(
     "section#untitled",
@@ -34,7 +31,7 @@ export const initUntitled = async () => {
     },
     "sceneIn",
   );
-};
+}, 'untitled');
 
 (() => {
   const world = World.getWorld();

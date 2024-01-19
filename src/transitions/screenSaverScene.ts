@@ -1,8 +1,9 @@
 import { gsap } from "gsap";
+import { commonFinisher, commonInitializer } from "./common";
 
 let ctx: gsap.Context;
 
-export const finishScreenSaver = async () => {
+export const finishScreenSaver = commonFinisher(async () => {
   ctx?.kill();
   ctx = gsap.context(() => {
     const tl = gsap.timeline();
@@ -15,7 +16,7 @@ export const finishScreenSaver = async () => {
           duration: 0.3,
           ease: "power1.inOut",
         },
-        "finish",
+        "finish"
       )
       .to(
         ".screenSaver-start",
@@ -24,12 +25,12 @@ export const finishScreenSaver = async () => {
           duration: 0.3,
           ease: "power1.inOut",
         },
-        "finish",
+        "finish"
       );
   }, "section#screenSaver");
-};
+});
 
-export const initScreenSaver = async () => {
+export const initScreenSaver = commonInitializer(async () => {
   ctx?.kill();
 
   // Text
@@ -56,7 +57,7 @@ export const initScreenSaver = async () => {
           duration: 0.6,
           ease: "power1.inOut",
         },
-        "textIn",
+        "textIn"
       )
       .addLabel("textOut", ">")
       .to(
@@ -67,7 +68,7 @@ export const initScreenSaver = async () => {
           ease: "power1.inOut",
           delay: 0.5,
         },
-        "textOut",
+        "textOut"
       );
   }, "section#screenSaver");
-};
+});

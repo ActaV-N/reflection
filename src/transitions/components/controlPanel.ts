@@ -10,6 +10,10 @@ const OFFSET_X = 50;
 const OFFSET_Y = 30;
 
 export const initControlPanel = async (title?: ArtworkTitle) => {
+  if(!title) {
+    return;
+  }
+
   gsap.killTweensOf(controlPanel);
 
   const tl = gsap.timeline();
