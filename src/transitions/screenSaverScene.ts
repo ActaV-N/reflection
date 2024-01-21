@@ -1,5 +1,6 @@
 import { gsap } from "gsap";
 import { commonFinisher, commonInitializer } from "./common";
+import { Hud } from "../hud";
 
 let ctx: gsap.Context;
 
@@ -31,6 +32,7 @@ export const finishScreenSaver = commonFinisher(async () => {
 });
 
 export const initScreenSaver = commonInitializer(async () => {
+  Hud.of().setPointer("main");
   ctx?.kill();
 
   // Text

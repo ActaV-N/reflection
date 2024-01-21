@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { Pointer } from "../../../libs";
 import { fragmentShader, vertexShader } from "./shader";
 
-export class MainPointer extends Pointer {
+export class RingPointer extends Pointer {
   constructor() {
     super();
     this.handGeometry = new THREE.CircleGeometry(0.2, 300);

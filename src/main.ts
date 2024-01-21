@@ -7,6 +7,7 @@ import { MainScreenSaver } from "./screenSaver";
 import { Untitled } from "./artworks";
 import { finishScreenSaver, initScreenSaver, initUntitled } from "./transitions";
 import { MainPointer } from "./hud/pointer";
+import { RingPointer } from "./hud/pointer/ringPointer";
 
 (async function () {
   const vision = await FilesetResolver.forVisionTasks(
@@ -26,14 +27,24 @@ import { MainPointer } from "./hud/pointer";
   const camera = await Camera.setUpCamera();
   const world = World.getWorld();
 
+  /**
+   * Pointers
+   */
   const mainPointer = new MainPointer();
+  const ringPointer = new RingPointer();
 
-  const hud = new Hud({
+  const hud = Hud.of({
     world,
     camera,
     gestureRecognizer,
-    initialPointer: mainPointer,
   });
+
+  hud.enrollPointer({
+    'main': mainPointer,
+    'ring': ringPointer,
+  })
+
+  hud.initializePointer("main");
 
   const screenSaver = new MainScreenSaver();
   const untitled = new Untitled();

@@ -41,8 +41,6 @@ export class Hud implements HUD {
 
   private pointer!: Pointer;
 
-  private initialPointer: Pointer;
-
   /**
    * Public properties
    */
@@ -60,17 +58,38 @@ export class Hud implements HUD {
 
   private gestureRecognizer: GestureRecognizer;
 
-  constructor(args: {
+  private static hud: Hud;
+
+  static of(args?: {
     world: World;
     camera: Camera;
     gestureRecognizer: GestureRecognizer;
-    initialPointer: Pointer;
+  }) {
+    if (!this.hud) {
+      if(!args) {
+        throw new Error('Initialize needed');
+      }
+
+      const { world, camera, gestureRecognizer } = args;
+      this.hud = new Hud({
+        world,
+        camera,
+        gestureRecognizer,
+      });
+    }
+
+    return this.hud;
+  }
+
+  private constructor(args: {
+    world: World;
+    camera: Camera;
+    gestureRecognizer: GestureRecognizer;
   }) {
     // args
     this.world = args.world;
     this.camera = args.camera;
     this.gestureRecognizer = args.gestureRecognizer;
-    this.initialPointer = args.initialPointer;
 
     // rxjs
     this.subject = new Subject<Hand | null>();
@@ -99,20 +118,6 @@ export class Hud implements HUD {
     this.renderer.setClearColor(0x000000, 0);
 
     /**
-     * Pointer
-     */
-    Hud.DefaultHandPosition = {
-      x: 0 * this.aspectRatio,
-      y: -0.6,
-    };
-
-    this.pointer = this.initialPointer;
-    this.pointers.set("initial", this.initialPointer);
-
-    this.pointer.setDefaultPosition(Hud.DefaultHandPosition);
-    this.scene.add(this.pointer.handMesh);
-
-    /**
      * Camera
      */
     this.hudCamera = new THREE.OrthographicCamera(
@@ -132,6 +137,29 @@ export class Hud implements HUD {
      */
     // Initial sizing
     this.resize();
+  }
+
+  public initializePointer(pointerInfo: string) {
+    /**
+     * Pointer
+     */
+    Hud.DefaultHandPosition = {
+      x: 0 * this.aspectRatio,
+      y: -0.6,
+    };
+
+    if(!this.pointers.has(pointerInfo)){
+      throw new Error(`There are no pointer such ${pointerInfo}`);
+    }
+
+    if(this.pointer) {
+      this.scene.remove(this.pointer.handMesh)
+    }
+
+    this.pointer = this.pointers.get(pointerInfo)!;
+
+    this.pointer.setDefaultPosition(Hud.DefaultHandPosition);
+    this.scene.add(this.pointer.handMesh);
 
     /**
      * Internal event handler
@@ -154,19 +182,21 @@ export class Hud implements HUD {
     );
   }
 
-  public enrollPointer(key: string, pointer: Pointer) {
-    if (this.pointers.has(key)) {
-      throw new Error("Already enrolled pointer key");
-    }
+  public enrollPointer(pointerInfo: Record<string, Pointer>) {
+    for (const [key, pointer] of Object.entries(pointerInfo)) {
+      if (this.pointers.has(key)) {
+        throw new Error("Already enrolled pointer key");
+      }
 
-    this.pointers.set(key, pointer);
+      this.pointers.set(key, pointer);
+    }
   }
 
   public setPointer(key: string) {
     if (!this.pointers.has(key)) {
       throw new Error("Not enrolled pointer key");
     }
-    this.pointer = this.pointers.get(key)!;
+    this.initializePointer(key);
   }
 
   recognizeHands() {

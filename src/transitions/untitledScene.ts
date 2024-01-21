@@ -6,6 +6,7 @@ import {
   finishControlPanel,
 } from "./components";
 import { commonFinisher, commonInitializer } from "./common";
+import { Hud } from "../hud";
 
 export const finishUntitled = commonFinisher(async () => {
   await finishControlPanel();
@@ -21,6 +22,9 @@ export const finishUntitled = commonFinisher(async () => {
 }, 'untitled');
 
 export const initUntitled = commonInitializer(async () => {
+  const hud = Hud.of();
+  hud.setPointer('ring');
+
   const tl = gsap.timeline();
   tl.addLabel("sceneIn").to(
     "section#untitled",
@@ -32,6 +36,7 @@ export const initUntitled = commonInitializer(async () => {
     "sceneIn",
   );
 }, 'untitled');
+
 
 (() => {
   const world = World.getWorld();
