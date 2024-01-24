@@ -5,13 +5,17 @@ import { Hud } from "./hud";
 import { World } from "./world";
 import { MainScreenSaver } from "./screenSaver";
 import { Untitled } from "./artworks";
-import { finishScreenSaver, initScreenSaver, initUntitled } from "./transitions";
+import {
+  finishScreenSaver,
+  initScreenSaver,
+  initUntitled,
+} from "./transitions";
 import { MainPointer } from "./hud/pointer";
 import { RingPointer } from "./hud/pointer/ringPointer";
 
 (async function () {
   const vision = await FilesetResolver.forVisionTasks(
-    "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm"
+    "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm",
   );
 
   const gestureRecognizer = await GestureRecognizer.createFromOptions(vision, {
@@ -40,9 +44,9 @@ import { RingPointer } from "./hud/pointer/ringPointer";
   });
 
   hud.enrollPointer({
-    'main': mainPointer,
-    'ring': ringPointer,
-  })
+    main: mainPointer,
+    ring: ringPointer,
+  });
 
   hud.initializePointer("main");
 

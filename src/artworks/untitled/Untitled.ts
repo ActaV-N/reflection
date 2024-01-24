@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { fragmentShader, vertexShader } from "./shaders";
+import SplineLoader from "@splinetool/loader";
 export class Untitled implements Artwork {
   /**
    * setting properties
@@ -14,7 +15,7 @@ export class Untitled implements Artwork {
    * THREE JS
    */
   // camera
-  private camera!: THREE.PerspectiveCamera;
+  private camera!: THREE.OrthographicCamera;
 
   // clock
   private clock!: THREE.Clock;
@@ -41,8 +42,16 @@ export class Untitled implements Artwork {
      * THREE JS
      */
     // Camera
-    this.camera = new THREE.PerspectiveCamera(75, this.sizes.aspectRatio);
-    this.camera.position.set(0, 0, 3);
+    this.camera = new THREE.OrthographicCamera(
+      window.innerWidth / -2,
+      window.innerWidth / 2,
+      window.innerHeight / 2,
+      window.innerHeight / -2,
+      -50000,
+      10000,
+    );
+    this.camera.position.set(0, 0, 0);
+    this.camera.quaternion.setFromEuler(new THREE.Euler(0, 0, 0));
 
     // Clock
     this.clock = new THREE.Clock();
@@ -76,6 +85,17 @@ export class Untitled implements Artwork {
       this.sizes.width,
       this.sizes.height,
     )!;
+
+    /**
+     * Spline
+     */
+    const loader = new SplineLoader();
+    loader.load(
+      "https://prod.spline.design/xKDM9wdP28w009HY/scene.splinecode",
+      (splineScene) => {
+        this.scene.add(splineScene);
+      },
+    );
   }
 
   render(delta: number, rtt: boolean): void {
@@ -93,6 +113,9 @@ export class Untitled implements Artwork {
 
   setRenderer(renderer: THREE.WebGLRenderer): void {
     this.renderer = renderer;
+    this.renderer.setAnimationLoop(this.render.bind(this, 0, false));
+    this.renderer.shadowMap.enabled = true;
+    this.renderer.shadowMap.type = THREE.PCFShadowMap;
   }
 
   resize(): void {
