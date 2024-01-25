@@ -28,6 +28,14 @@
   dependencies:
     semver-compare "^1.0.0"
 
+"@splinetool/runtime@^1.0.34":
+  version "1.0.34"
+  resolved "https://registry.npmjs.org/@splinetool/runtime/-/runtime-1.0.34.tgz"
+  integrity sha512-DfbqRRbPUqWwOQolLvslKzZzFxd0pMpnihkc1i/EO85/UzYmUu68z3/lAsb0VHdWzYpor8LTggmKDbRXyLSNBA==
+  dependencies:
+    on-change "^4.0.0"
+    semver-compare "^1.0.0"
+
 "@types/dat.gui@^0.7.12":
   version "0.7.12"
   resolved "https://registry.npmjs.org/@types/dat.gui/-/dat.gui-0.7.12.tgz"
@@ -120,6 +128,11 @@ nanoid@^3.3.6:
   version "3.3.7"
   resolved "https://registry.npmjs.org/nanoid/-/nanoid-3.3.7.tgz"
   integrity sha512-eSRppjcPIatRIMC1U6UngP8XFcz8MQWGQdt1MTBQ7NaAmvXDfvNxbvWV3x2y6CdEUciCSsDHDQZbhYaB8QEo2g==
+
+on-change@^4.0.0:
+  version "4.0.2"
+  resolved "https://registry.npmjs.org/on-change/-/on-change-4.0.2.tgz"
+  integrity sha512-cMtCyuJmTx/bg2HCpHo3ZLeF7FZnBOapLqZHr2AlLeJ5Ul0Zu2mUJJz051Fdwu/Et2YW04ZD+TtU+gVy0ACNCA==
 
 picocolors@^1.0.0:
   version "1.0.0"

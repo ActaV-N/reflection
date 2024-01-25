@@ -17,6 +17,7 @@
   "dependencies": {
     "@mediapipe/tasks-vision": "^0.10.8",
     "@splinetool/loader": "^1.0.33",
+    "@splinetool/runtime": "^1.0.34",
     "@types/dat.gui": "^0.7.12",
     "dat.gui": "^0.7.9",
     "gsap": "^3.12.3",

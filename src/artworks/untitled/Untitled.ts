@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { fragmentShader, vertexShader } from "./shaders";
-import SplineLoader from "@splinetool/loader";
+import { Hud } from "../../hud";
+import { World } from "../../world";
 export class Untitled implements Artwork {
   /**
    * setting properties
@@ -35,7 +36,7 @@ export class Untitled implements Artwork {
   // Geometry
 
   // Material
-  private testMaterial!: THREE.ShaderMaterial;
+  private artworkMaterial!: THREE.ShaderMaterial;
 
   constructor() {
     /**
@@ -47,8 +48,8 @@ export class Untitled implements Artwork {
       window.innerWidth / 2,
       window.innerHeight / 2,
       window.innerHeight / -2,
-      -50000,
-      10000,
+      -1,
+      1000,
     );
     this.camera.position.set(0, 0, 0);
     this.camera.quaternion.setFromEuler(new THREE.Euler(0, 0, 0));
@@ -57,9 +58,12 @@ export class Untitled implements Artwork {
     this.clock = new THREE.Clock();
 
     // Meshes
-    const testGeometry = new THREE.PlaneGeometry(15, 15);
+    const planeGeometry = new THREE.PlaneGeometry(
+      (1000 * window.innerWidth) / window.innerHeight,
+      1000,
+    );
 
-    this.testMaterial = new THREE.ShaderMaterial({
+    this.artworkMaterial = new THREE.ShaderMaterial({
       vertexShader,
       fragmentShader,
       uniforms: {
@@ -69,15 +73,18 @@ export class Untitled implements Artwork {
         uTime: {
           value: 0,
         },
+        uMouse: {
+          value: new THREE.Vector2(0, 0),
+        },
       },
     });
-    const testMesh = new THREE.Mesh(testGeometry, this.testMaterial);
-    testMesh.position.set(0, -1, 0);
+    const planeMesh = new THREE.Mesh(planeGeometry, this.artworkMaterial);
+    planeMesh.position.set(0, -1, 0);
 
     // scene
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color("#f7f7f7");
-    this.scene.add(testMesh);
+    this.scene.add(planeMesh);
     this.scene.add(this.camera);
 
     // renderTarget
@@ -86,16 +93,17 @@ export class Untitled implements Artwork {
       this.sizes.height,
     )!;
 
-    /**
-     * Spline
-     */
-    const loader = new SplineLoader();
-    loader.load(
-      "https://prod.spline.design/xKDM9wdP28w009HY/scene.splinecode",
-      (splineScene) => {
-        this.scene.add(splineScene);
-      },
-    );
+    // Event listener
+    // 의존 관계가 이상하다....
+    // TODO: refactor
+    const hud = Hud.of();
+    const world = World.getWorld();
+    hud.addEventListener("move", (e) => {
+      if (world.currentScene === "untitled") {
+        const { x, y } = e.hand!;
+        this.artworkMaterial.uniforms.uMouse.value = new THREE.Vector2(x, y);
+      }
+    });
   }
 
   render(delta: number, rtt: boolean): void {
@@ -108,7 +116,7 @@ export class Untitled implements Artwork {
       this.renderer.setRenderTarget(null);
       this.renderer.render(this.scene, this.camera);
     }
-    this.testMaterial.uniforms.uTime.value = time;
+    this.artworkMaterial.uniforms.uTime.value = time;
   }
 
   setRenderer(renderer: THREE.WebGLRenderer): void {
