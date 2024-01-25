@@ -1,15 +1,12 @@
 {
   "name": "Project 3/12",
+  "short_name": "Reflection",
+  "description": "Reflection",
   "start_url": "/",
   "display": "fullscreen",
   "icons": [
     {
-      "src": "/images/icon-192.png",
-      "type": "image/png",
-      "sizes": "192x192"
-    },
-    {
-      "src": "images/icon-512.png",
+      "src": "/logo/icon.png",
       "type": "image/png",
       "sizes": "512x512"
     }
