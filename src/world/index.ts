@@ -45,6 +45,8 @@ export class World {
 
   private needTransition: boolean = false;
 
+  private textures!: Record<string, THREE.Texture>;
+
   private constructor() {
     /**
      * THREE JS
@@ -53,7 +55,11 @@ export class World {
     this.clock = new THREE.Clock();
 
     // Mesh
-    const texture = new THREE.TextureLoader().load("textures/perlin.png");
+    const loader = new THREE.TextureLoader();
+    this.textures = {
+      perlinTransition: loader.load("textures/perlin.png"),
+      paintingTransition: loader.load("textures/painting.png"),
+    };
 
     this.transitionGeometry = new THREE.PlaneGeometry(
       this.sizes.width,
@@ -61,7 +67,7 @@ export class World {
     );
     this.transitionMaterial = new THREE.ShaderMaterial({
       uniforms: {
-        tMixTexture: { value: texture },
+        tMixTexture: { value: this.textures["perlinTransition"] },
         uMixRatio: { value: 0 },
         tDiffuse1: { value: null },
         tDiffuse2: { value: null },
@@ -119,11 +125,16 @@ export class World {
   public setArtworkTo(
     title: ArtworkTitle,
     transition: keyof typeof transitions = "perlinTransition",
+    transitionTexture?: string,
   ) {
     if (!this.needTransition) {
       this.needTransition = true;
       this.capturedTime = this.clock.getElapsedTime();
 
+      if (transitionTexture && this.textures[transitionTexture]) {
+        this.transitionMaterial.uniforms.tMixTexture.value =
+          this.textures[transitionTexture];
+      }
       this.transitionMaterial.fragmentShader = transitions[transition];
       this.transitionMaterial.needsUpdate = true;
 
