@@ -121,6 +121,10 @@ export class Challenge implements Artwork {
     hud.addEventListener("open", () => {
       this.grabTarget = 1.0;
     });
+
+    hud.addEventListener("handlost", () => {
+      this.grabTarget = 1.0;
+    });
   }
 
   render(delta: number, rtt: boolean): void {
