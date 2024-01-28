@@ -64,6 +64,7 @@ import { RingPointer } from "./hud/pointer/ringPointer";
   });
 
   world.animate();
+
   window.addEventListener("resize", () => {
     world.resize();
   });

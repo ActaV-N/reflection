@@ -9,11 +9,14 @@ export const prevBtn = controlPanel.querySelector(".prev")!;
 const OFFSET_X = 50;
 const OFFSET_Y = 30;
 
-export const initControlPanel = async (title?: ArtworkTitle) => {
-  if(!title) {
+export const initPanel = async (title?: ArtworkTitle) => {
+  if (!title) {
     return;
   }
 
+  /**
+   * control panel
+   */
   gsap.killTweensOf(controlPanel);
 
   const tl = gsap.timeline();
@@ -115,7 +118,7 @@ export const initControlPanel = async (title?: ArtworkTitle) => {
     );
 };
 
-export const finishControlPanel = () =>
+export const finishPanel = () =>
   new Promise((resolve) => {
     const tl = gsap.timeline();
 

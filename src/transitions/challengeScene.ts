@@ -1,17 +1,17 @@
 import { gsap } from "gsap";
 import { World } from "../world";
 import { initScreenSaver, initUntitled } from ".";
-import { homeBtn, finishControlPanel, nextBtn, prevBtn } from "./components";
+import { homeBtn, finishPanel, nextBtn, prevBtn } from "./components";
 import { commonFinisher, commonInitializer } from "./common";
 import { Hud } from "../hud";
 
 export const finishChallenge = commonFinisher(async () => {
-  await finishControlPanel();
+  await finishPanel();
 
   const tl = gsap.timeline();
   gsap.killTweensOf("section#challenge");
 
-  tl.to("section", {
+  tl.to("section#challenge", {
     autoAlpha: 0,
     duration: 0.3,
     ease: "power1.inOut",
@@ -42,20 +42,26 @@ export const initChallenge = commonInitializer(async () => {
   });
 
   homeBtn.addEventListener("click", async () => {
-    await finishChallenge();
-    await initScreenSaver();
-    world.setArtworkTo("screenSaver", "distortTransition");
+    if (world.currentScene === "challenge") {
+      await finishChallenge();
+      await initScreenSaver();
+      world.setArtworkTo("screenSaver", "distortTransition");
+    }
   });
 
   nextBtn.addEventListener("click", async () => {
-    await finishChallenge();
-    await initScreenSaver();
-    world.setArtworkTo("challenge", "perlinTransition", "paintingTransition");
+    if (world.currentScene === "challenge") {
+      await finishChallenge();
+      await initScreenSaver();
+      world.setArtworkTo("challenge", "perlinTransition", "paintingTransition");
+    }
   });
 
   prevBtn.addEventListener("click", async () => {
-    await finishChallenge();
-    await initUntitled();
-    world.setArtworkTo("untitled", "perlinTransition", "perlinTransition");
+    if (world.currentScene === "challenge") {
+      await finishChallenge();
+      await initUntitled();
+      world.setArtworkTo("untitled", "perlinTransition", "perlinTransition");
+    }
   });
 })();
