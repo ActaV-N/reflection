@@ -2,9 +2,9 @@
 precision lowp float;
 #endif
 
-uniform vec2 uMouse;
 uniform float uTime;
 uniform float uResolution;
+uniform float uGrab;
 
 in vec2 vUv;
 
@@ -17,33 +17,35 @@ void main () {
     vec3 color = vec3(.0);
 
     // Scale
-    st *= 5.;
+    st *= 8.;
 
     // Tile the space
     vec2 i_st = floor(st);
     vec2 f_st = fract(st);
 
     float m_dist = 1.;  // minimum distance
-    for (int j= -1; j <= 1; j++ ) {
-        for (int i= -1; i <= 1; i++ ) {
-            // Neighbor place in the grid
-            vec2 neighbor = vec2(float(i),float(j));
 
-            // Random position from current + neighbor place in the grid
-            vec2 offset = random2(i_st + neighbor);
+    float x[9] = float[9](-1.0, -1.0, -1.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0);
+    float y[9] = float[9](-1.0, 0.0, 1.0, -1.0, 0.0, 1.0, -1.0, 0.0, 1.0);
 
-            // Animate the offset
-            offset = 0.5 + 0.5*sin(uTime + 6.2831*offset);
+    for(int i=0; i<9; i++){
+        // Neighbor place in the grid
+        vec2 neighbor = vec2(x[i], y[i]);
 
-            // Position of the cell
-            vec2 pos = neighbor + offset - f_st;
+        // Random position from current + neighbor place in the grid
+        vec2 offset = random2(i_st + neighbor);
 
-            // Cell distance
-            float dist = length(pos);
+        // Animate the offset
+        offset = 0.5 + 0.5*sin(uTime + 6.2831*offset * uGrab);
 
-            // Metaball it!
-            m_dist = min(m_dist, m_dist*dist);
-        }
+        // Position of the cell
+        vec2 pos = neighbor + offset - f_st;
+
+        // Cell distance
+        float dist = length(pos);
+
+        // Metaball it!
+        m_dist = min(m_dist, m_dist*dist);
     }
 
     // Draw cells

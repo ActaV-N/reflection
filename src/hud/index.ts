@@ -47,6 +47,8 @@ export class Hud implements HUD {
   public point: Hand = {
     x: 0,
     y: 0,
+    originalX: 0,
+    originalY: 0,
     gesture: "",
   };
 
@@ -219,6 +221,8 @@ export class Hud implements HUD {
         const point = {
           x: (landmarks[9].x - 0.5) * 2 * this.aspectRatio,
           y: -(landmarks[9].y - 0.5) * 2,
+          originalX: landmarks[9].x,
+          originalY: -landmarks[9].y + 1,
           gesture: _gesture,
         };
 
@@ -245,7 +249,14 @@ export class Hud implements HUD {
           ["handlost"].includes(event) &&
             eventHandler({
               name: "handlost",
-              hand,
+              hand: {
+                x: Hud.DefaultHandPosition.x,
+                y: Hud.DefaultHandPosition.y,
+                originalX:
+                  Hud.DefaultHandPosition.x / this.aspectRatio / 2 + 0.5,
+                originalY: Hud.DefaultHandPosition.y / 2 + 0.5,
+                gesture: GESTURE.NONE,
+              },
             });
         }
 

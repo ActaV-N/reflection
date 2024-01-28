@@ -38,6 +38,11 @@ export class Untitled implements Artwork {
   // Material
   private artworkMaterial!: THREE.ShaderMaterial;
 
+  /**
+   * animation
+   */
+  private grab: number = 0.02;
+
   constructor() {
     /**
      * THREE JS
@@ -73,8 +78,8 @@ export class Untitled implements Artwork {
         uTime: {
           value: 0,
         },
-        uMouse: {
-          value: new THREE.Vector2(0, 0),
+        uGrab: {
+          value: 0.02,
         },
       },
     });
@@ -98,16 +103,30 @@ export class Untitled implements Artwork {
     // TODO: refactor
     const hud = Hud.of();
     const world = World.getWorld();
-    hud.addEventListener("move", (e) => {
+    hud.addEventListener("grab", (e) => {
       if (world.currentScene === "untitled") {
-        const { x, y } = e.hand!;
-        this.artworkMaterial.uniforms.uMouse.value = new THREE.Vector2(x, y);
+        this.grab = 1.5;
+      }
+    });
+
+    hud.addEventListener("handlost", (e) => {
+      if (world.currentScene === "untitled") {
+        this.grab = 0.02;
+      }
+    });
+
+    hud.addEventListener("open", (e) => {
+      if (world.currentScene === "untitled") {
+        this.grab = 0.02;
       }
     });
   }
 
   render(delta: number, rtt: boolean): void {
     const time = this.clock.getElapsedTime();
+    this.artworkMaterial.uniforms.uGrab.value =
+      this.artworkMaterial.uniforms.uGrab.value +
+      (this.grab - this.artworkMaterial.uniforms.uGrab.value) * 0.03;
     if (rtt) {
       this.renderer.setRenderTarget(this.renderTarget);
       this.renderer.clear();

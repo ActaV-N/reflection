@@ -3,6 +3,8 @@ type EventType = "grab" | "open" | "handdetected" | "handlost" | "move";
 interface Hand {
   x: number;
   y: number;
+  originalX: number;
+  originalY: number;
   // TODO: event type 정의하면 event type으로 바꿀 것.
   gesture: string;
 }
@@ -14,7 +16,7 @@ interface PointEvent {
 
 interface HandLostEvent {
   name: "handlost";
-  hand: null;
+  hand: Hand;
 }
 
 interface HandDetectedEvent {
