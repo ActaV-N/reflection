@@ -20,7 +20,7 @@ export const finishUntitled = commonFinisher(async () => {
 
 export const initUntitled = commonInitializer(async () => {
   const hud = Hud.of();
-  hud.setPointer("ring");
+  hud.setPointer("untitled");
 
   const tl = gsap.timeline();
   tl.addLabel("sceneIn").to(

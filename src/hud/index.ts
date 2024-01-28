@@ -4,7 +4,6 @@ import { Subject } from "rxjs";
 import { GESTURE } from "../const";
 import { Camera } from "../camera";
 import { World } from "../world";
-import { MainPointer } from "./pointer";
 import { Pointer } from "../libs";
 
 export class Hud implements HUD {
@@ -66,8 +65,8 @@ export class Hud implements HUD {
     gestureRecognizer: GestureRecognizer;
   }) {
     if (!this.hud) {
-      if(!args) {
-        throw new Error('Initialize needed');
+      if (!args) {
+        throw new Error("Initialize needed");
       }
 
       const { world, camera, gestureRecognizer } = args;
@@ -126,7 +125,7 @@ export class Hud implements HUD {
       1,
       -1,
       0.1,
-      100
+      100,
     );
 
     this.hudCamera.position.z = 1;
@@ -148,12 +147,12 @@ export class Hud implements HUD {
       y: -0.6,
     };
 
-    if(!this.pointers.has(pointerInfo)){
+    if (!this.pointers.has(pointerInfo)) {
       throw new Error(`There are no pointer such ${pointerInfo}`);
     }
 
-    if(this.pointer) {
-      this.scene.remove(this.pointer.handMesh)
+    if (this.pointer) {
+      this.scene.remove(this.pointer.handMesh);
     }
 
     this.pointer = this.pointers.get(pointerInfo)!;
@@ -173,12 +172,12 @@ export class Hud implements HUD {
 
     this.addEventListener(
       "handdetected",
-      this.pointer.handDetectHandler.bind(this.pointer)
+      this.pointer.handDetectHandler.bind(this.pointer),
     );
 
     this.addEventListener(
       "handlost",
-      this.pointer.handLostHandler.bind(this.pointer)
+      this.pointer.handLostHandler.bind(this.pointer),
     );
   }
 
@@ -203,7 +202,7 @@ export class Hud implements HUD {
     const nowInMs = Date.now();
     const results = this.gestureRecognizer.recognizeForVideo(
       this.camera.video,
-      nowInMs
+      nowInMs,
     );
 
     /**

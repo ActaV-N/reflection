@@ -10,8 +10,7 @@ import {
   initScreenSaver,
   initUntitled,
 } from "./transitions";
-import { MainPointer } from "./hud/pointer";
-import { RingPointer } from "./hud/pointer/ringPointer";
+import { MainPointer, UntitledPointer } from "./hud/pointer";
 
 (async function () {
   const vision = await FilesetResolver.forVisionTasks(
@@ -35,7 +34,7 @@ import { RingPointer } from "./hud/pointer/ringPointer";
    * Pointers
    */
   const mainPointer = new MainPointer();
-  const ringPointer = new RingPointer();
+  const untitledPointer = new UntitledPointer();
 
   const hud = Hud.of({
     world,
@@ -45,7 +44,7 @@ import { RingPointer } from "./hud/pointer/ringPointer";
 
   hud.enrollPointer({
     main: mainPointer,
-    ring: ringPointer,
+    untitled: untitledPointer,
   });
 
   hud.initializePointer("main");
