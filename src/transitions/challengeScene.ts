@@ -1,30 +1,30 @@
 import { gsap } from "gsap";
 import { World } from "../world";
-import { initChallenge, initScreenSaver } from ".";
-import { homeBtn, finishControlPanel, nextBtn } from "./components";
+import { initScreenSaver, initUntitled } from ".";
+import { homeBtn, finishControlPanel, nextBtn, prevBtn } from "./components";
 import { commonFinisher, commonInitializer } from "./common";
 import { Hud } from "../hud";
 
-export const finishUntitled = commonFinisher(async () => {
+export const finishChallenge = commonFinisher(async () => {
   await finishControlPanel();
 
   const tl = gsap.timeline();
-  gsap.killTweensOf("section#untitled");
+  gsap.killTweensOf("section#challenge");
 
   tl.to("section", {
     autoAlpha: 0,
     duration: 0.3,
     ease: "power1.inOut",
   });
-}, "untitled");
+}, "challenge");
 
-export const initUntitled = commonInitializer(async () => {
+export const initChallenge = commonInitializer(async () => {
   const hud = Hud.of();
   hud.setPointer("ring");
 
   const tl = gsap.timeline();
   tl.addLabel("sceneIn").to(
-    "section#untitled",
+    "section#challenge",
     {
       autoAlpha: 1,
       duration: 0.5,
@@ -32,25 +32,30 @@ export const initUntitled = commonInitializer(async () => {
     },
     "sceneIn",
   );
-}, "untitled");
+}, "challenge");
 
 (() => {
   const world = World.getWorld();
 
-  gsap.set("section#untitled", {
+  gsap.set("section#challenge", {
     autoAlpha: 0,
   });
 
   homeBtn.addEventListener("click", async () => {
-    await finishUntitled();
-    console.log("?");
+    await finishChallenge();
     await initScreenSaver();
     world.setArtworkTo("screenSaver", "distortTransition");
   });
 
   nextBtn.addEventListener("click", async () => {
-    await finishUntitled();
-    await initChallenge();
+    await finishChallenge();
+    await initScreenSaver();
     world.setArtworkTo("challenge", "perlinTransition", "paintingTransition");
+  });
+
+  prevBtn.addEventListener("click", async () => {
+    await finishChallenge();
+    await initUntitled();
+    world.setArtworkTo("untitled", "perlinTransition", "perlinTransition");
   });
 })();

@@ -4,7 +4,7 @@ import { Camera } from "./camera";
 import { Hud } from "./hud";
 import { World } from "./world";
 import { MainScreenSaver } from "./screenSaver";
-import { Untitled } from "./artworks";
+import { Challenge, Untitled } from "./artworks";
 import {
   finishScreenSaver,
   initScreenSaver,
@@ -50,12 +50,17 @@ import { RingPointer } from "./hud/pointer/ringPointer";
 
   hud.initializePointer("main");
 
+  /**
+   * Artworks
+   */
   const screenSaver = new MainScreenSaver();
   const untitled = new Untitled();
+  const challenge = new Challenge();
 
   world.initialize(hud);
   world.setProject(screenSaver, {
     untitled,
+    challenge,
   });
 
   world.animate();
@@ -70,7 +75,7 @@ import { RingPointer } from "./hud/pointer/ringPointer";
 
   hud.addEventListener("open", async (event) => {
     if (world.currentScene === "screenSaver") {
-      world.setArtworkTo("untitled");
+      world.setArtworkTo("untitled", "perlinTransition", "perlinTransition");
       await finishScreenSaver();
       await initUntitled();
     }

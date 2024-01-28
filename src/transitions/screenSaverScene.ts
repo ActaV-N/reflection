@@ -11,13 +11,13 @@ export const finishScreenSaver = commonFinisher(async () => {
 
     tl.addLabel("finish")
       .to(
-        "section#screenSaver",
+        "section",
         {
           autoAlpha: 0,
           duration: 0.3,
           ease: "power1.inOut",
         },
-        "finish"
+        "finish",
       )
       .to(
         ".screenSaver-start",
@@ -26,7 +26,7 @@ export const finishScreenSaver = commonFinisher(async () => {
           duration: 0.3,
           ease: "power1.inOut",
         },
-        "finish"
+        "finish",
       );
   }, "section#screenSaver");
 });
@@ -59,7 +59,7 @@ export const initScreenSaver = commonInitializer(async () => {
           duration: 0.6,
           ease: "power1.inOut",
         },
-        "textIn"
+        "textIn",
       )
       .addLabel("textOut", ">")
       .to(
@@ -70,7 +70,7 @@ export const initScreenSaver = commonInitializer(async () => {
           ease: "power1.inOut",
           delay: 0.5,
         },
-        "textOut"
+        "textOut",
       );
   }, "section#screenSaver");
 });

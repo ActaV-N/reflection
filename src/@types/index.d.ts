@@ -1,4 +1,4 @@
-type ArtworkTitle = "screenSaver" | "untitled";
+type ArtworkTitle = "screenSaver" | "untitled" | "challenge";
 type EventType = "grab" | "open" | "handdetected" | "handlost" | "move";
 interface Hand {
   x: number;
@@ -10,42 +10,41 @@ interface Hand {
 interface PointEvent {
   name: EventType;
   hand: Hand;
-};
-
-interface HandLostEvent implements PointEvent {
-  name: 'handlost',
-  hand: null,
 }
 
-interface HandDetectedEvent implements PointEvent {
-  name: 'handdetected',
-  hand: Hand,
+interface HandLostEvent {
+  name: "handlost";
+  hand: null;
 }
 
-interface GrabEvent implements PointEvent {
-  name: 'grab',
-  hand: Hand,
+interface HandDetectedEvent {
+  name: "handdetected";
+  hand: Hand;
 }
 
-interface OpenEvent implements PointEvent {
-  name: 'open',
-  hand: Hand,
+interface GrabEvent {
+  name: "grab";
+  hand: Hand;
 }
 
-interface MoveEvent implements PointEvent {
-  name: 'move',
-  hand: Hand,
+interface OpenEvent {
+  name: "open";
+  hand: Hand;
+}
+
+interface MoveEvent {
+  name: "move";
+  hand: Hand;
 }
 
 type AllEvents = {
-  'grab': GrabEvent,
-  'open': OpenEvent,
-  'handdetected': HandDetectedEvent,
-  'handlost': HandLostEvent,
-  'move': MoveEvent,
-}
+  grab: GrabEvent;
+  open: OpenEvent;
+  handdetected: HandDetectedEvent;
+  handlost: HandLostEvent;
+  move: MoveEvent;
+};
 type IEventHandler<T = AllEvents[keyof AllEvents]> = (event: T) => void;
-
 
 interface IEventListener {
   (event: EventType, handler: IEventHandler<AllEvents[EventType]>): void;
@@ -70,7 +69,7 @@ interface Artwork {
   renderTarget: THREE.WebGLRenderTarget;
 }
 
-interface ScreenSaver implements Artwork {
+interface ScreenSaver {
   resize(): void;
 
   render(delta: number, rtt: boolean): void;
@@ -80,15 +79,15 @@ interface ScreenSaver implements Artwork {
   renderTarget: THREE.WebGLRenderTarget;
 }
 
-declare module '*.glsl' {
+declare module "*.glsl" {
   const value: string;
   export default value;
 }
-declare module '*.vert' {
+declare module "*.vert" {
   const value: string;
   export default value;
 }
-declare module '*.frag' {
+declare module "*.frag" {
   const value: string;
   export default value;
 }
