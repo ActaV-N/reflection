@@ -88,34 +88,36 @@ export const initPanel = async (title?: ArtworkTitle) => {
       );
   }
 
-  tl.to(
-    nextBtn,
-    {
-      autoAlpha: 1,
-      duration: 0.5,
-      ease: "power1.inOut",
-    },
-    "prevEnd+=.2",
-  )
-    .to(
+  if(title !== "challenge") {
+    tl.to(
       nextBtn,
       {
-        x: OFFSET_X,
-        y: OFFSET_Y,
+        autoAlpha: 1,
         duration: 0.5,
-        ease: "power1.out",
+        ease: "power1.inOut",
       },
-      "prevEnd",
+      "prevEnd+=.2",
     )
-    .to(
-      nextBtn,
-      {
-        scale: 0.85,
-        duration: 1.2,
-        ease: "elastic.inOut",
-      },
-      "prevEnd",
-    );
+      .to(
+        nextBtn,
+        {
+          x: OFFSET_X,
+          y: OFFSET_Y,
+          duration: 0.5,
+          ease: "power1.out",
+        },
+        "prevEnd",
+      )
+      .to(
+        nextBtn,
+        {
+          scale: 0.85,
+          duration: 1.2,
+          ease: "elastic.inOut",
+        },
+        "prevEnd",
+      );
+  }
 };
 
 export const finishPanel = () =>
