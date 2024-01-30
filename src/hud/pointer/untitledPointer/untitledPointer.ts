@@ -5,7 +5,7 @@ import { fragmentShader, vertexShader } from "./shader";
 export class UntitledPointer extends Pointer {
   constructor() {
     super();
-    this.handGeometry = new THREE.CircleGeometry(0.2, 300);
+    this.handGeometry = new THREE.PlaneGeometry(0.4, 0.4);
     this.handMaterial = new THREE.ShaderMaterial({
       vertexShader,
       fragmentShader,

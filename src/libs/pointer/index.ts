@@ -5,7 +5,7 @@ export abstract class Pointer {
 
   protected declare handMaterial: THREE.ShaderMaterial;
 
-  protected declare handGeometry: THREE.CircleGeometry;
+  protected declare handGeometry: THREE.PlaneGeometry;
 
   protected targetPosition: { x: number; y: number } = {
     x: 0,
