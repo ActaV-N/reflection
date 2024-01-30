@@ -68,7 +68,7 @@ export const initScreenSaver = commonInitializer(async () => {
           autoAlpha: 0,
           duration: 0.6,
           ease: "power1.inOut",
-          delay: 0.5,
+          delay: 0.8,
         },
         "textOut",
       );

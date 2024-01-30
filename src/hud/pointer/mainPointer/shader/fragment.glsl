@@ -69,7 +69,8 @@ void draw(out vec4 _FragColor, in vec2 vUv) {
   // color
   vec3 col = mix(color1, color2, cl); 
   col = mix(color3, col, v0);
-
+  col = mix(color3, col, v0);
+  col = mix(color3, col, v0);
   col = (col + v1) * v3;
   col.rgb = clamp(col.rgb, 0.0, 1.0);
 
