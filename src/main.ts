@@ -10,7 +10,7 @@ import {
   initScreenSaver,
   initUntitled,
 } from "./transitions";
-import { MainPointer, UntitledPointer } from "./hud/pointer";
+import { ChallengePointer, MainPointer, UntitledPointer } from "./hud/pointer";
 
 (async function () {
   const vision = await FilesetResolver.forVisionTasks(
@@ -35,6 +35,7 @@ import { MainPointer, UntitledPointer } from "./hud/pointer";
    */
   const mainPointer = new MainPointer();
   const untitledPointer = new UntitledPointer();
+  const challengePointer = new ChallengePointer();
 
   const hud = Hud.of({
     world,
@@ -45,6 +46,7 @@ import { MainPointer, UntitledPointer } from "./hud/pointer";
   hud.enrollPointer({
     main: mainPointer,
     untitled: untitledPointer,
+    challenge: challengePointer,
   });
 
   hud.initializePointer("main");
