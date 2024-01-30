@@ -12,6 +12,8 @@ vec2 random2( vec2 p ) {
     return fract(sin(vec2(dot(p,vec2(127.1,311.7)),dot(p,vec2(269.5,183.3))))*43758.5453);
 }
 
+#define PI 3.1415926535897932384626433832795
+
 void main () {
     vec2 st = vUv;
     vec3 color = vec3(.0);
@@ -51,5 +53,19 @@ void main () {
     // Draw cells
     color += step(0.03, m_dist);
 
-    gl_FragColor = vec4(1.0-color,1.0);
+    vec3 result = color;
+    if(result == vec3(0.0)){
+        result = vec3(
+            0.5 * sin(uTime + st.x) + 0.5, // Red
+            0.5 * sin(uTime + st.y) + 0.5, // Green
+            0.5 * sin(uTime + st.x * st.y) + 0.5  // Blue
+        );
+
+        result = clamp(result, 0.5, 0.8);
+    }
+    if(result == vec3(1.0)){
+        result = vec3(0.96);
+    }
+
+    gl_FragColor = vec4(result,1.0);
 }
