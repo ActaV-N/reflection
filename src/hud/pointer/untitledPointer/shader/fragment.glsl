@@ -21,6 +21,9 @@ void main()
   vec2 st = vUv;
 
   vec3 color = vec3(circle(st,1.0));
-
-	gl_FragColor = vec4(color, 1.0 );
+  float a = 1.0;
+  if(color == vec3(0.0)) {
+    a = 0.0;
+  }
+	gl_FragColor = vec4(color, a);
 }

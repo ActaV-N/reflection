@@ -20,7 +20,7 @@ export const finishChallenge = commonFinisher(async () => {
 
 export const initChallenge = commonInitializer(async () => {
   const hud = Hud.of();
-  hud.setPointer("untitled");
+  hud.setPointer("challenge");
 
   const tl = gsap.timeline();
   tl.addLabel("sceneIn").to(

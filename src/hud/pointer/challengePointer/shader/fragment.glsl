@@ -6,21 +6,26 @@ uniform vec3 uResolution;
 uniform float uTime;
 
 varying vec2 vUv;
-varying vec3 vPosition;
-varying vec3 vNewPosition;
 
-float circle(in vec2 _st, in float _radius){
-    vec2 dist = _st-vec2(0.5);
-	return 1.0-smoothstep(_radius-(_radius*0.01),
-                         _radius+(_radius*0.01),
-                         dot(dist,dist)*4.0);
+float saturation(vec3 color) {
+    float maxColor = max(max(color.r, color.g), color.b);
+    float minColor = min(min(color.r, color.g), color.b);
+    return maxColor - minColor;
 }
 
 void main()
 {
-  vec2 st = vUv;
+  	vec2 p = vUv - 0.5; 
 
-  vec3 color = vec3(circle(st,1.0));
+    float a = atan(p.x,p.y);
+    float r = length(p);
+    vec2 uv = vec2(0.0,r);
 
-	gl_FragColor = vec4(color, 1.0 );
+    
+    vec4 colorAnimation = vec4(0.6 + 0.3 * sin(uTime * 3.0), 0.3 + 0.1 * cos(uTime * 2.0), 0.4 + 0.3 * sin(uTime * 8.0), 1.0);
+
+    vec4 color = vec4( 5. / (70. * abs(2.4*length(p)-1.) ) ) * colorAnimation;
+
+    color = vec4(color.rgb, smoothstep(0.2, 0.4, saturation(color.rgb)));
+    gl_FragColor = color;
 }
